@@ -1,0 +1,31 @@
+## NOTE THE FOLLOWING:
+##    1) All elements in the configuration file must be filled in with no empty
+##       variables/details
+##    2) Paths in this configuration file must be absolute or relative to the
+##       Snakefile location
+##    3) The configfile is ordered according to the order in the workflow:
+##       quality control, trimming, aligning, sorting and statistical analysis
+##    4) Take some time to read and understand all the parameters in this
+##       config file to be able to use to its fullest potential
+
+###############################################################################
+###############                GENERAL PARAMETERS                ###############
+###############################################################################
+
+CORES_NUMBER: 1
+
+###############################################################################
+###############                 QUALITY CONTROL                 ###############
+###############################################################################
+
+# Path to folder containing gzipped raw fastq data
+RAW_DATA: example/Raw_data
+# Details about naming and file format. If data is paired-end, the name format
+# must be the following: <SAMPLE-NAME>_<PAIR_1>.<RAW_DATA_EXTENSION>.gz and
+# <SAMPLE-NAME>_<PAIR_2>.<RAW_DATA_EXTENSION>.gz. By default those are set to
+# <SAMPLE-NAME>_R1.fq.gz and <SAMPLE-NAME>_R2.fq.gz
+# If data is single-end, then the name format must be:
+# <SAMPLE-NAME>.<RAW_DATA_EXTENSION>.gz
+PAIR_1: R1
+PAIR_2: R2
+RAW_DATA_EXTENSION: fq

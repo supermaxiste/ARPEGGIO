@@ -1,3 +1,7 @@
-samples:
-    A: data/samples/A.fastq
-    B: data/samples/B.fastq
+channels:
+  - bioconda
+dependencies:
+  - trim-galore=0.6.0
+  - fastqc=0.11.8
+  - bismark=0.20.1
+  - bwameth=0.2.2 
