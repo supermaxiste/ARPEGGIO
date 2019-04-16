@@ -1,0 +1,162 @@
+
+SUMMARISING RUN PARAMETERS
+==========================
+Input filename: example/Raw_data/parent1_R2.fq.gz
+Trimming mode: paired-end
+Trim Galore version: 0.5.0
+Cutadapt version: 2.1
+Quality Phred score cutoff: 20
+Quality encoding type selected: ASCII+33
+Adapter sequence: 'AGATCGGAAGAGC' (Illumina TruSeq, Sanger iPCR; auto-detected)
+Maximum trimming error rate: 0.1 (default)
+Minimum required adapter overlap (stringency): 1 bp
+Minimum required sequence length for both reads before a sequence pair gets removed: 20 bp
+Output file will be GZIP compressed
+
+
+This is cutadapt 2.1 with Python 3.6.8
+Command line parameters: -f fastq -e 0.1 -q 20 -O 1 -a AGATCGGAAGAGC example/Raw_data/parent1_R2.fq.gz
+WARNING: Option --format is deprecated and ignored because the input file format is always auto-detected
+Processing reads on 1 core in single-end mode ...
+Finished in 0.31 s (31 us/read; 1.97 M reads/minute).
+
+=== Summary ===
+
+Total reads processed:                  10,000
+Reads with adapters:                     6,898 (69.0%)
+Reads written (passing filters):        10,000 (100.0%)
+
+Total basepairs processed:     1,260,000 bp
+Quality-trimmed:                  11,756 bp (0.9%)
+Total written (filtered):      1,081,230 bp (85.8%)
+
+=== Adapter 1 ===
+
+Sequence: AGATCGGAAGAGC; Type: regular 3'; Length: 13; Trimmed: 6898 times.
+
+No. of allowed errors:
+0-9 bp: 0; 10-13 bp: 1
+
+Bases preceding removed adapters:
+  A: 34.5%
+  C: 21.0%
+  G: 17.7%
+  T: 26.7%
+  none/other: 0.1%
+
+Overview of removed sequences
+length	count	expect	max.err	error counts
+1	2342	2500.0	0	2342
+2	90	625.0	0	90
+3	106	156.2	0	106
+4	51	39.1	0	51
+5	68	9.8	0	68
+6	49	2.4	0	49
+7	96	0.6	0	96
+8	51	0.2	0	51
+9	160	0.0	0	159 1
+10	47	0.0	1	47
+11	72	0.0	1	66 6
+12	66	0.0	1	62 4
+13	47	0.0	1	44 3
+14	96	0.0	1	92 4
+15	48	0.0	1	46 2
+16	71	0.0	1	64 7
+17	85	0.0	1	84 1
+18	41	0.0	1	40 1
+19	78	0.0	1	76 2
+20	61	0.0	1	59 2
+21	57	0.0	1	56 1
+22	75	0.0	1	74 1
+23	91	0.0	1	85 6
+24	116	0.0	1	113 3
+25	31	0.0	1	29 2
+26	54	0.0	1	51 3
+27	105	0.0	1	101 4
+28	68	0.0	1	66 2
+29	44	0.0	1	41 3
+30	80	0.0	1	78 2
+31	24	0.0	1	22 2
+32	47	0.0	1	45 2
+33	85	0.0	1	81 4
+34	85	0.0	1	81 4
+35	52	0.0	1	49 3
+36	78	0.0	1	76 2
+37	53	0.0	1	50 3
+38	92	0.0	1	90 2
+39	29	0.0	1	24 5
+40	57	0.0	1	56 1
+41	48	0.0	1	45 3
+42	86	0.0	1	83 3
+43	26	0.0	1	22 4
+44	46	0.0	1	43 3
+45	79	0.0	1	76 3
+46	46	0.0	1	44 2
+47	58	0.0	1	57 1
+48	40	0.0	1	39 1
+49	38	0.0	1	37 1
+50	61	0.0	1	61
+51	58	0.0	1	55 3
+52	24	0.0	1	20 4
+53	54	0.0	1	50 4
+54	39	0.0	1	38 1
+55	72	0.0	1	70 2
+56	25	0.0	1	24 1
+57	32	0.0	1	30 2
+58	61	0.0	1	57 4
+59	31	0.0	1	27 4
+60	34	0.0	1	33 1
+61	41	0.0	1	35 6
+62	41	0.0	1	39 2
+63	39	0.0	1	39
+64	34	0.0	1	33 1
+65	43	0.0	1	42 1
+66	47	0.0	1	42 5
+67	71	0.0	1	64 7
+68	207	0.0	1	201 6
+69	106	0.0	1	103 3
+70	46	0.0	1	44 2
+71	23	0.0	1	20 3
+72	17	0.0	1	17
+73	22	0.0	1	21 1
+74	15	0.0	1	15
+75	9	0.0	1	9
+76	13	0.0	1	12 1
+77	12	0.0	1	10 2
+78	8	0.0	1	8
+79	7	0.0	1	7
+80	6	0.0	1	5 1
+81	9	0.0	1	7 2
+82	5	0.0	1	5
+83	7	0.0	1	6 1
+84	5	0.0	1	5
+85	1	0.0	1	1
+86	2	0.0	1	2
+87	6	0.0	1	6
+88	3	0.0	1	3
+89	6	0.0	1	5 1
+90	2	0.0	1	2
+91	7	0.0	1	6 1
+92	2	0.0	1	2
+93	1	0.0	1	1
+94	2	0.0	1	2
+96	4	0.0	1	4
+97	2	0.0	1	2
+98	3	0.0	1	3
+99	2	0.0	1	1 1
+100	2	0.0	1	2
+102	3	0.0	1	3
+103	1	0.0	1	1
+105	2	0.0	1	2
+115	1	0.0	1	1
+118	3	0.0	1	3
+119	1	0.0	1	1
+120	3	0.0	1	3
+
+RUN STATISTICS FOR INPUT FILE: example/Raw_data/parent1_R2.fq.gz
+=============================================
+10000 sequences processed in total
+
+Total number of sequences analysed for the sequence pair length validation: 10000
+
+Number of sequence pairs removed because at least one read was shorter than the length cutoff (20 bp): 37 (0.37%)

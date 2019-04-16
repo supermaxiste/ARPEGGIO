@@ -1,0 +1,5 @@
+name	type	origin
+parent1	PE	parent1
+parent2	PE	parent2
+allopolyploid1	PE	allopolyploid
+allopolyploid2	PE	allopolyploid
