@@ -31,8 +31,7 @@ RAW_DATA_DIR = getpath(config["RAW_DATA"])
 ## Run all analyses
 rule all:
 	input:
-		OUTPUT_DIR + "FastQC/parent1_R1_val_1_fastqc.zip"#,
-        #OUTPUT_DIR + "FASTQtrimmed/parent1_R1_val_1.fq.gz"
+		OUTPUT_DIR + "Bismark/allopolyploid1/allopolyploid1_R1_val_1_bismark_bt2_pe.bam"
 
 ##### The following pseudo-rules generate output files for the main rules #####
 # Pseudo-Rule for Quality Control with FastQC on raw read files
@@ -55,6 +54,10 @@ rule pseudo_quality_control_trimmed:
         expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_1"]) + "_val_1.fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()),
         expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_val_2.fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()),
         expand(OUTPUT_DIR + "FastQC/{sample}_trimmed_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist())
+
+rule pseudo_preparation:
+    input:
+        OUTPUT_DIR + "Bismark/genome_preparation_done"
 
 ######################### Main rules of ARPEGGIO #############################
 
@@ -130,3 +133,38 @@ rule quality_control_trimmed:
     shell:
         "echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
         "fastqc -o {params.FastQC} -t {threads} {input.fastq}"
+
+## Run Bismark to prepare synthetic converted genomes
+
+rule bismark_prepare_genome:
+    input:
+        genome1 = config["GENOME_PARENT_1"],
+        genome2 = config["GENOME_PARENT_2"]
+    output:
+        OUTPUT_DIR + "Bisulfite_Genome"
+    shell:
+        "bismark_genome_preparation {input.genome1} > {output}; "
+        "bismark_genome_preparation {input.genome2} > {output}"
+
+## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
+
+rule bismark_alignment_PE_1:
+    input:
+        OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+        fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
+        fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
+    output:
+        sample = OUTPUT_DIR + "Bismark/{sample}/{sample}_R1_val_1_bismark_bt2_pe.bam",
+        report = OUTPUT_DIR + "Bismark/{sample}/{sample}_R1_val_1_bismark_bt2_PE_report.txt"
+    params:
+        output = OUTPUT_DIR + "Bismark/{sample}/",
+        genome1 = config["GENOME_PARENT_1"]
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
+        "bismark --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params} --temp_dir {params.output}"

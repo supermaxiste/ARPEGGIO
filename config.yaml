@@ -21,6 +21,7 @@ METADATA: example/metadata.txt
 ###############################################################################
 
 RUN_TRIMMING: True
+GENOME_PREPARATION: True
 RUN_BISMARK: True
 
 ###############################################################################
@@ -38,3 +39,12 @@ RAW_DATA: example/Raw_data
 PAIR_1: R1
 PAIR_2: R2
 RAW_DATA_EXTENSION: fq
+
+###############################################################################
+###############                    ALIGNMENT                    ###############
+###############################################################################
+
+# Paths to parental genome assemblies
+
+GENOME_PARENT_1: example/genomes/parent_1/
+GENOME_PARENT_2: example/genomes/parent_2/
