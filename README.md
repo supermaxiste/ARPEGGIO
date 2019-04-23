@@ -1,4 +1,4 @@
-<img src="harp.png" height="48">
+<img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48">
 
 ## ARPEGgIO: Automated Reproducible Polyploid EpiGenomic Workflow
 
