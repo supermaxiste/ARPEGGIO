@@ -1,15 +1,11 @@
-## PlantEpiSnake
+## **ARPEGgIO**: **A**utomated **R**eproducible **P**olyploid **E**pi**G**enomic **W**orkflow
 
-This repository contains a SnakeMake workflow to analyze BS-seq data coming from plants. The workflow goes through several steps: adapter trimming, quality check, mapping, deduplication, methylation calling and statistics for different methylation contexts.
+ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis with two additional features specific for allopolyploids:
 
-The following tools are used in each step:  
+ - EAGLE-RC: a read-sorting algorithm developed by Tony Kuo to accurately assign reads coming from allopolyploids
+ - Three downstream analyses for Differentially Methylated Regions (DMRs): 1) methylation contexts, 2) intergenic DMRs and 3) genic dmrseq
 
-- Adapter trimming: `TrimGalore`
-- Quality check: `FastQC`
-- Mapping and deduplication: `Bismark`
-- Methylation calling: `Bismark`
-- Statistics: for CG and CHG context `dmrseq`, for CHH context `DMRcaller`
+ ## Motivation
 
-A final report with read statistics is also included.
-
-
+Whole genome sequencing is becoming more and more affordable and plant scientists are struggling less and less in generating high-throughput data for plants. Compared to other organisms plants show very large genomes and for flowering plants specifically, polyploidy (especially allopolyploidy) is common. Both these aspects make it difficult to analyze both genetic and epigenetic data. For genetic data a lot has been done for many other organisms and most of the tools can be used for plants as well. For epigenetic data, more specifically WGBS, less has been done and no standard exists.
+This workflow tries to overcome this gap by providing an automated and reproducible way to analyze WGBS data coming from allopolyploids with different tools.
