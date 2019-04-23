@@ -7,7 +7,7 @@ ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing
  - EAGLE-RC: a read-sorting algorithm developed by Tony Kuo to accurately assign reads coming from allopolyploids
  - Three downstream analyses for Differentially Methylated Regions (DMRs): 1) methylation contexts, 2) intergenic DMRs and 3) genic dmrseq
  
-![](workflow.png)
+![](Workflow.png)
 
  ## Motivation
 
