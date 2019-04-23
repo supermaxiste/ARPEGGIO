@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/supermaxiste/ARPEGGIO.svg?token=auqzHDuyLxkuTyyxwdvA&branch=master)](https://travis-ci.com/supermaxiste/ARPEGGIO)
 <img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48"><img src="harp.png" height="48">
 
 ## ARPEGgIO: Automated Reproducible Polyploid EpiGenomic Workflow
