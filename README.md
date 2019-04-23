@@ -1,4 +1,4 @@
-## **ARPEGgIO**: **A**utomated **R**eproducible **P**olyploid **E**pi**G**enomic **W**orkflow
+## ![](harp.png) ARPEGgIO: Automated Reproducible Polyploid EpiGenomic Workflow ![](harp.png)
 
 ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis with two additional features specific for allopolyploids:
 
