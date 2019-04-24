@@ -9,3 +9,4 @@ dependencies:
   - bwameth=0.2.2
   - samtools=0.1.9=h8ee4bcc_1
   - bowtie2=2.3.5
+  - multiqc=1.7
