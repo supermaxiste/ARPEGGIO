@@ -7,6 +7,6 @@ dependencies:
   - fastqc=0.11.8
   - bismark=0.21.0
   - bwameth=0.2.2
-  - samtools=0.1.9=h8ee4bcc_1
+  - samtools=1.9
   - bowtie2=2.3.5
   - multiqc=1.7
