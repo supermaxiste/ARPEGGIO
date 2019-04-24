@@ -31,7 +31,7 @@ RAW_DATA_DIR = getpath(config["RAW_DATA"])
 ## Run all analyses
 rule all:
 	input:
-		OUTPUT_DIR + "Bismark/allopolyploid1/allopolyploid1_R1_val_1_bismark_bt2_pe.bam"
+		OUTPUT_DIR + "MultiQC/multiqc_report.html"
 
 ##### The following pseudo-rules generate output files for the main rules #####
 # Pseudo-Rule for Quality Control with FastQC on raw read files
@@ -146,18 +146,17 @@ rule bismark_prepare_genome:
         "bismark_genome_preparation {input.genome1} > {output}; "
         "bismark_genome_preparation {input.genome2} > {output}"
 
-## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
+## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are single-end.
 
-rule bismark_alignment_PE_1:
+rule bismark_alignment_SE_1:
     input:
         OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
-        fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
-        fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
+        fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else + RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
     output:
-        sample = OUTPUT_DIR + "Bismark/{sample}/{sample}_R1_val_1_bismark_bt2_pe.bam",
-        report = OUTPUT_DIR + "Bismark/{sample}/{sample}_R1_val_1_bismark_bt2_PE_report.txt"
+        sample = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam",
+        report = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_SE_report.txt"
     params:
-        output = OUTPUT_DIR + "Bismark/{sample}/",
+        output = OUTPUT_DIR + "Bismark/{sample}_1/",
         genome1 = config["GENOME_PARENT_1"]
     log:
         OUTPUT_DIR + "logs/bismark_{sample}.log"
@@ -167,4 +166,122 @@ rule bismark_alignment_PE_1:
         config["CORES_NUMBER"]
     shell:
         "echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-        "bismark --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params} --temp_dir {params.output}"
+        "bismark --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
+
+## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are single-end.
+
+rule bismark_alignment_SE_2:
+    input:
+        OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+        fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else + RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
+    output:
+        sample = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam",
+        report = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_SE_report.txt"
+    params:
+        output = OUTPUT_DIR + "Bismark/{sample}_2/",
+        genome2 = config["GENOME_PARENT_2"]
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
+        "bismark --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
+
+## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
+
+rule bismark_alignment_PE_1:
+    input:
+        OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+        fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
+        fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
+    output:
+        sample = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam",
+        report = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_PE_report.txt"
+    params:
+        output = OUTPUT_DIR + "Bismark/{sample}_1/",
+        genome1 = config["GENOME_PARENT_1"]
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
+        "bismark --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+
+## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are paired-end.
+
+rule bismark_alignment_PE_2:
+    input:
+        OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+        fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
+        fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
+    output:
+        sample = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam",
+        report = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_PE_report.txt"
+    params:
+        output = OUTPUT_DIR + "Bismark/{sample}_2/",
+        genome2 = config["GENOME_PARENT_2"]
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
+        "bismark --multicore {threads} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+
+## Define a function to create an input for MultiQC to include all the settings specified in the config file.
+
+def multiqc_input(wildcards):
+    input = []
+    input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist()))
+    input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_1"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
+    input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
+    if config["GENOME_PREPARATION"]:
+        input.extend(expand(OUTPUT_DIR + "Bisulfite_Genome"))
+    if config["RUN_TRIMMING"]:
+        input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz", sample = samples.name[samples.type == 'SE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
+    if config["RUN_BISMARK"]:
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        print(input)
+    return input
+
+## Define a function to create input directories based on the settings in the config file
+def multiqc_params(wildcards):
+    param = [OUTPUT_DIR + "FastQC", OUTPUT_DIR + "Bismark"]
+    if config["GENOME_PREPARATION"]:
+        param.append(OUTPUT_DIR + "Bisulfite_Genome")
+    if config["RUN_TRIMMING"]:
+        param.append(OUTPUT_DIR + "FASTQtrimmed")
+    if config["RUN_BISMARK"]:
+        param.append(OUTPUT_DIR + "Bismark")
+    return param
+
+## Run MultiQC to combine all the outputs from QC, trimming and alignment in a single nice report
+
+rule multiqc:
+	input:
+		multiqc_input
+	output:
+		OUTPUT_DIR + "MultiQC/multiqc_report.html"
+	params:
+		inputdir = multiqc_params,
+		multiqcdir = OUTPUT_DIR + "MultiQC"
+	log:
+		OUTPUT_DIR + "logs/multiqc.log"
+	conda:
+		"envs/environment.yaml"
+	shell:
+		"echo 'MultiQC version:\n' > {log}; multiqc --version >> {log}; "
+		"multiqc {params.inputdir} -f -o {params.multiqcdir}"
