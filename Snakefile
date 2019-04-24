@@ -142,6 +142,8 @@ rule bismark_prepare_genome:
         genome2 = config["GENOME_PARENT_2"]
     output:
         OUTPUT_DIR + "Bisulfite_Genome"
+    conda:
+        "envs/environment.yaml"
     shell:
         "bismark_genome_preparation {input.genome1} > {output}; "
         "bismark_genome_preparation {input.genome2} > {output}"
