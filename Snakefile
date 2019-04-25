@@ -251,12 +251,14 @@ def multiqc_input(wildcards):
         input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz", sample = samples.name[samples.type == 'SE'].values.tolist()))
         input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
         input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_trimmed_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_1"]) + "_val_1_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_val_2_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
     if config["RUN_BISMARK"]:
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
-        print(input)
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
     return input
 
 ## Define a function to create input directories based on the settings in the config file
