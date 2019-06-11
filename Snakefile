@@ -59,6 +59,20 @@ rule pseudo_preparation:
     input:
         OUTPUT_DIR + "Bismark/genome_preparation_done"
 
+
+# Pseudo-Rule for deduplication with Bismark on bam files
+rule pseudo_deduplication:
+    input:
+        expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()),
+        expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()),
+        expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()),
+        expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist())
+
+rule pseudo_read_sorting:
+    input:
+        expand(OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam", sample = samples.name[samples.origin == 'allopolyploid']),
+        expand(OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam", sample = samples.name[samples.origin == 'allopolyploid'])
+
 ######################### Main rules of ARPEGGIO #############################
 
 ## Run FastQC on raw untrimmed reads for quality control
@@ -238,6 +252,246 @@ rule bismark_alignment_PE_2:
         "echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
         "bismark --multicore {threads} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
+## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_1)
+
+rule deduplication_SE_1:
+    input:
+        OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam"
+    output:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam"
+    params:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    shell:
+        "deduplicate_bismark -s --output_dir {params} --bam {input}"
+
+## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_2)
+
+rule deduplication_SE_2:
+    input:
+        OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam"
+    output:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
+    params:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    shell:
+        "deduplicate_bismark -s --output_dir {params} --bam {input}"
+
+## Run deduplication of the alignments to remove duplicated reads for PE reads (GENOME_PARENT_1)
+
+rule deduplication_PE_1:
+    input:
+        OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam"
+    output:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+    params:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    shell:
+        "deduplicate_bismark -p --output_dir {params} --bam {input}"
+
+## Run deduplication of the alignments to remove duplicated reads for PE reads (GENOME_PARENT_2)
+
+rule deduplication_PE_2:
+    input:
+        OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam"
+    output:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+    params:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
+    log:
+        OUTPUT_DIR + "logs/bismark_{sample}.log"
+    conda:
+        "envs/environment.yaml"
+    shell:
+        "deduplicate_bismark -p --output_dir {params} --bam {input}"
+
+## Run EAGLE-RC to classify reads to the most probable genome for SE reads
+
+rule read_sorting_SE:
+    input:
+        reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam",
+        reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
+    output:
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam",
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam"
+    params:
+        list = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified_reads.list",
+        phred = "--phred64" if config["PHRED_SCORE_64"] else "",
+        genome1 = config["ASSEMBLY_PARENT_1"],
+        genome2 = config["ASSEMBLY_PARENT_2"],
+        output = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified"
+    conda:
+        "envs/environment.yaml"
+    shell:
+        "eagle-rc --ngi {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list}"
+
+## Run EAGLE-RC to classify reads to the most probable genome for PE reads
+
+rule read_sorting_PE:
+    input:
+        reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam",
+        reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+    output:
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam",
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam"
+    params:
+        list = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified_reads.list",
+        phred = "--phred64" if config["PHRED_SCORE_64"] else "",
+        genome1 = config["ASSEMBLY_PARENT_1"],
+        genome2 = config["ASSEMBLY_PARENT_2"],
+        output = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified"
+    conda:
+        "envs/environment.yaml"
+    shell:
+        "eagle-rc --ngi --paired {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list}"
+
+## Run Bismark methylation extraction on SE bam files for parent species 1
+
+rule methylation_extraction_SE_parent_1:
+    input:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}/",
+        genome = config["GENOME_PARENT_1"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on SE bam files for parent species 2
+
+rule methylation_extraction_SE_parent_2:
+    input:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}/",
+        genome = config["GENOME_PARENT_2"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_1)
+
+rule methylation_extraction_SE_allo_1:
+    input:
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}_1/",
+        genome = config["GENOME_PARENT_1"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_2)
+
+rule methylation_extraction_SE_allo_2:
+    input:
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
+        genome = config["GENOME_PARENT_2"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on PE bam files for parent species 1
+
+rule methylation_extraction_PE_parent_1:
+    input:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}/",
+        genome = config["GENOME_PARENT_1"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on PE bam files for parent species 2
+
+rule methylation_extraction_PE_parent_2:
+    input:
+        OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}/",
+        genome = config["GENOME_PARENT_1"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_1)
+
+rule methylation_extraction_PE_allo_1:
+    input:
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}_1/",
+        genome = config["GENOME_PARENT_1"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
+## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_2)
+
+rule methylation_extraction_PE_allo_2:
+    input:
+        OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam"
+    output:
+        OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz"
+    params:
+        output = OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
+        genome = config["GENOME_PARENT_2"]
+    conda:
+        "envs/environment.yaml"
+    threads:
+        config["CORES_NUMBER"]
+    shell:
+        "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
 ## Define a function to create an input for MultiQC to include all the settings specified in the config file.
 
 def multiqc_input(wildcards):
@@ -251,12 +505,23 @@ def multiqc_input(wildcards):
         input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz", sample = samples.name[samples.type == 'SE'].values.tolist()))
         input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
         input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_trimmed_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_1"]) + "_val_1_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_val_2_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
     if config["RUN_BISMARK"]:
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
-        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
-        print(input)
+        ## alignment
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+        input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+        ## deduplication
+        input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist())),
+        input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist())),
+        input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist())),
+        input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+    if config["RUN_READ_SORTING"]:
+        input.extend(expand(OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam", sample = samples.name[samples.origin == 'allopolyploid'])),
+        input.extend(expand(OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam", sample = samples.name[samples.origin == 'allopolyploid']))
     return input
 
 ## Define a function to create input directories based on the settings in the config file
