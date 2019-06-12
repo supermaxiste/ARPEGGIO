@@ -1,12 +1,11 @@
 channels:
   - bioconda
 dependencies:
-  - graphviz=2.38.0
-  - snakemake=5.4.5
-  - trim-galore=0.5.0
-  - fastqc=0.11.8
-  - bismark=0.21.0
-  - bwameth=0.2.2
-  - samtools=1.9
-  - bowtie2=2.3.5
-  - multiqc=1.7
+  - snakemake
+  - trim-galore
+  - fastqc
+  - bismark
+  - bwameth
+  - samtools
+  - multiqc
+  - tony-kuo::eagle
