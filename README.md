@@ -18,7 +18,7 @@ This workflow tries to overcome this gap by providing an automated and reproduci
 
 ## Installation
 
-To install this workflow you first need to ![install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and create a conda environment with all the tools needed to run the analyses in the workflow.
+To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and create a conda environment with all the tools needed to run the analyses in the workflow.
 
 ```
 git clone https://github.com/supermaxiste/ARPEGGIO

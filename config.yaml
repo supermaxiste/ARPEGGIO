@@ -23,6 +23,8 @@ METADATA: example/metadata.txt
 RUN_TRIMMING: True
 GENOME_PREPARATION: True
 RUN_BISMARK: True
+RUN_READ_SORTING: True
+RUN_METHYLATION_CALL: True
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
@@ -48,3 +50,11 @@ RAW_DATA_EXTENSION: fq
 
 GENOME_PARENT_1: example/genomes/parent_1/
 GENOME_PARENT_2: example/genomes/parent_2/
+
+###############################################################################
+##############                    READ SORTING                    ##############
+###############################################################################
+
+PHRED_SCORE_64: True
+ASSEMBLY_PARENT_1: example/genomes/parent_1/parent1.fa
+ASSEMBLY_PARENT_2: example/genomes/parent_2/parent2.fa

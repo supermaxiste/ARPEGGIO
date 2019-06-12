@@ -1,5 +1,6 @@
 channels:
   - bioconda
+  - tony-kuo
 dependencies:
   - snakemake
   - trim-galore
