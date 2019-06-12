@@ -2,11 +2,11 @@ channels:
   - bioconda
   - tony-kuo
 dependencies:
-  - trim-galore=0.6.2
-  - fastqc=0.11.8
-  - bismark=0.22.1
-  - bwameth=0.2.2
-  - samtools=1.9
-  - multiqc=1.6
-  - eagle=1.1.0
-  - bioconductor-dmrseq
+  - snakemake
+  - trim-galore
+  - fastqc
+  - bismark
+  - bwameth
+  - samtools
+  - multiqc
+  - tony-kuo::eagle
