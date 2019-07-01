@@ -25,6 +25,7 @@ GENOME_PREPARATION: True
 RUN_BISMARK: True
 RUN_READ_SORTING: True
 RUN_METHYLATION_CALL: True
+RUN_DMR_ANALYSIS: True
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
