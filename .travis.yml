@@ -7,6 +7,20 @@ dist: xenial
 
 install:
   - sudo apt-get update
+  ## Setup htslib for eagle
+  - sudo apt-get install autoconf automake make gcc perl zlib1g-dev libbz2-dev liblzma-dev libcurl4-gnutls-dev libssl-dev
+  - wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2
+  - tar -vxjf htslib-1.9.tar.bz2
+  - cd htslib-1.9
+  - ./configure --prefix=$HOME/bin
+  - make
+  - make install
+  - export PATH="$HOME/bin:$PATH"
+  ## Install eagle
+  - git clone https://github.com/tony-kuo/eagle
+  - cd eagle
+  - make HTSDIR=$HOME/bin PREFIX=$HOME/tools/
+  ## Install conda
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -18,14 +32,9 @@ install:
   - conda config --add channels defaults
   - conda config --add channels conda-forge
   - conda config --add channels bioconda
-  - conda config --add channels anaconda
-  - conda install conda-build
-  - conda build eagle
-  - conda env create --name snakemake -f envs/environment.yaml 
-  - conda install -n snakemake snakemake
-  - conda install -n snakemake --use-local eagle
+  - conda create -q -n snakemake snakemake python=$TRAVIS_PYTHON_VERSION
 
 script:
   - source activate snakemake
   ## run the workflow
-  - travis_wait 50 snakemake
+  - travis_wait 50 snakemake --use-conda
