@@ -16,11 +16,10 @@ install:
   - make
   - make install
   - export PATH="$HOME/tools:$PATH"
-  - pwd
   ## Install eagle
   - git clone https://github.com/tony-kuo/eagle
   - cd eagle
-  - make HTSDIR=$HOME/htslib-1.9/ PREFIX=$HOME/tools/
+  - make HTSDIR=/home/travis/build/supermaxiste/ARPEGGIO/htslib-1.9 PREFIX=$HOME/tools/
   ## Install conda
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
