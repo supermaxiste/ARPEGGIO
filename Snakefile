@@ -58,12 +58,14 @@ rule pseudo_trimming:
 		expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()),
 		expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_fq.gz", sample = samples.name[samples.type == 'SE'].values.tolist())
 
+
 # Pseudo-Rule for Quality Control with FastQC on trimmed read files
 rule pseudo_quality_control_trimmed:
 	input:
 		expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()),
 		expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()),
 		expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist())
+
 
 rule pseudo_preparation:
 	input:
@@ -125,7 +127,6 @@ rule trim_galore:
 	output:
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["IS_PAIRED"] else OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz",
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["IS_PAIRED"] else ""
-
 	params:
 		FASTQtrimmeddir = OUTPUT_DIR + "FASTQtrimmed"
 	log:
@@ -176,6 +177,7 @@ rule quality_control_trimmed_PE:
 		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
 		"fastqc -o {params.FastQC} -t {threads} {input}"
 
+
 ## Run Bismark to prepare synthetic converted genomes
 
 rule bismark_prepare_genome:
@@ -196,6 +198,7 @@ rule bismark_alignment_SE_1:
 	input:
 		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/SE/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
+
 	output:
 		sample = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam",
 		report = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_SE_report.txt"
