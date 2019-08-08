@@ -16,6 +16,7 @@ install:
   - make
   - make install
   - export PATH="$HOME/tools:$PATH"
+  - pwd
   ## Install eagle
   - git clone https://github.com/tony-kuo/eagle
   - cd eagle
