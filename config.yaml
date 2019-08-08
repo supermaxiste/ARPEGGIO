@@ -6,7 +6,7 @@
 ##    3) The configfile is ordered according to the order in the workflow:
 ##       quality control, trimming, aligning, sorting and statistical analysis
 ##    4) Take some time to read and understand all the parameters in this
-##       config file to be able to use to its fullest potential
+##       config file to be able to use it correctly
 
 ###############################################################################
 ###############                GENERAL PARAMETERS                ###############
@@ -15,16 +15,19 @@
 CORES_NUMBER: 1
 OUTPUT: output/
 METADATA: example/metadata.txt
+# path to eagle-rc
+EAGLE: /home/supermaxiste/tools/eagle/eagle-rc
 
 ###############################################################################
 ###############                CONDITIONAL RULES                ###############
 ###############################################################################
 
+IS_PAIRED: True
 RUN_TRIMMING: True
 GENOME_PREPARATION: True
 RUN_BISMARK: True
 RUN_READ_SORTING: True
-RUN_METHYLATION_CALL: True
+RUN_DMR_ANALYSIS: True
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
@@ -40,7 +43,7 @@ RAW_DATA: example/Raw_data
 # <SAMPLE-NAME>.<RAW_DATA_EXTENSION>.gz
 PAIR_1: R1
 PAIR_2: R2
-RAW_DATA_EXTENSION: fq
+RAW_DATA_EXTENSION: fastq
 
 ###############################################################################
 ###############                    ALIGNMENT                    ###############
@@ -48,13 +51,13 @@ RAW_DATA_EXTENSION: fq
 
 # Paths to parental genome assemblies
 
-GENOME_PARENT_1: example/genomes/parent_1/
-GENOME_PARENT_2: example/genomes/parent_2/
+GENOME_PARENT_1: example/genomes/parent1/
+GENOME_PARENT_2: example/genomes/parent2/
 
 ###############################################################################
 ##############                    READ SORTING                    ##############
 ###############################################################################
 
 PHRED_SCORE_64: True
-ASSEMBLY_PARENT_1: example/genomes/parent_1/parent1.fa
-ASSEMBLY_PARENT_2: example/genomes/parent_2/parent2.fa
+ASSEMBLY_PARENT_1: example/genomes/parent1/parent1.fa
+ASSEMBLY_PARENT_2: example/genomes/parent2/parent2.fa

@@ -1,6 +1,6 @@
 channels:
   - bioconda
-  - tony-kuo
+  - r
 dependencies:
   - trim-galore
   - fastqc
@@ -8,4 +8,4 @@ dependencies:
   - bwameth
   - samtools
   - multiqc
-  - tony-kuo::eagle
+  - r-data.table
