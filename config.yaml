@@ -16,7 +16,7 @@ CORES_NUMBER: 1
 OUTPUT: output/
 METADATA: example/metadata.txt
 # path to eagle-rc
-EAGLE: /home/supermaxiste/tools/eagle/eagle-rc
+EAGLE: $HOME/tools/eagle/eagle-rc
 
 ###############################################################################
 ###############                CONDITIONAL RULES                ###############

@@ -41,7 +41,7 @@ rule all:
 		OUTPUT_DIR + "MultiQC/multiqc_report.html",
 		#OUTPUT_DIR+ "Bismark/extraction/parent1_1_p2/parent1_1.CX_report.txt.gz"
 		#OUTPUT_DIR + "DMR_analysis/context_separation/parent1/parent11_CG.cov"
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/"
+		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt"
 
 ##### The following pseudo-rules generate output files for the main rules #####
 # Pseudo-Rule for Quality Control with FastQC on raw read files
