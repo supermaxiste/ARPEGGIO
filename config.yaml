@@ -16,7 +16,7 @@ CORES_NUMBER: 1
 OUTPUT: output/
 METADATA: example/metadata.txt
 # path to eagle-rc
-EAGLE: $HOME/tools/eagle/eagle-rc
+EAGLE: /home/travis/build/supermaxiste/ARPEGGIO/htslib-1.9/eagle/eagle-rc
 
 ###############################################################################
 ###############                CONDITIONAL RULES                ###############
