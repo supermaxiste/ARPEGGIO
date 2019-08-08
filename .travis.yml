@@ -12,15 +12,14 @@ install:
   - wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2
   - tar -vxjf htslib-1.9.tar.bz2
   - cd htslib-1.9
-  - ./configure --prefix=$HOME/bin
+  - ./configure --prefix=$HOME/tools
   - make
   - make install
-  - export PATH="$HOME/bin:$PATH"
+  - export PATH="$HOME/tools:$PATH"
   ## Install eagle
   - git clone https://github.com/tony-kuo/eagle
   - cd eagle
-  - HTSPATH="$(which htslib)"
-  - make HTSDIR=$HTSPATH PREFIX=$HOME/tools/
+  - make HTSDIR=$HOME/bin/htslib/ PREFIX=$HOME/tools/
   ## Install conda
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
