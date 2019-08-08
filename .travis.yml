@@ -19,7 +19,7 @@ install:
   ## Install eagle
   - git clone https://github.com/tony-kuo/eagle
   - cd eagle
-  - make HTSDIR=/home/travis/build/supermaxiste/ARPEGGIO/htslib-1.9 PREFIX=$HOME/tools/
+  - make HTSDIR=/home/travis/build/supermaxiste/ARPEGGIO/htslib-1.9 PREFIX=$HOME/tools/ LDLIBS=-lm -lz -llzma -lbz2 -lpthread -lcurl
   ## Install conda
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
