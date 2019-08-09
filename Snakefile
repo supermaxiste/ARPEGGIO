@@ -112,9 +112,11 @@ rule quality_control:
 		OUTPUT_DIR + "logs/fastqc_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		CORES
 	shell:
 		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
-		" fastqc -o {params.FastQC} -t {CORES} {input.fastq}"
+		" fastqc -o {params.FastQC} -t {threads} {input.fastq}"
 
 ## Run TrimGalore to trim reads, there are two rules depending on paired or single-end status
 ## For single-end reads
@@ -149,9 +151,11 @@ rule quality_control_trimmed_SE:
 		OUTPUT_DIR + "logs/fastqc_trimmed_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		CORES
 	shell:
 		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
-		"fastqc -o {params.FastQC} -t {CORES} {input.fastq}"
+		"fastqc -o {params.FastQC} -t {threads} {input.fastq}"
 
 ## Run FastQC on PE trimmed reads resulting from trim_galore
 
@@ -168,9 +172,11 @@ rule quality_control_trimmed_PE:
 		OUTPUT_DIR + "logs/fastqc_trimmed_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		config["CORES_NUMBER"]
 	shell:
 		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
-		"fastqc -o {params.FastQC} -t {CORES} {input}"
+		"fastqc -o {params.FastQC} -t {threads} {input}"
 
 
 ## Run Bismark to prepare synthetic converted genomes
@@ -204,9 +210,11 @@ rule bismark_alignment_SE_1:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
+		"bismark --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are single-end.
 
@@ -224,9 +232,11 @@ rule bismark_alignment_SE_2:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
+		"bismark --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
 
@@ -245,9 +255,11 @@ rule bismark_alignment_PE_1:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {BISMARK_CORES} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are paired-end.
 
@@ -266,9 +278,11 @@ rule bismark_alignment_PE_2:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {BISMARK_CORES} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --multicore {threads} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 ## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_1)
 
@@ -382,8 +396,10 @@ rule methylation_extraction_SE_parent_1:
 		genome = config["GENOME_PARENT_1"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for parent species 2
 
@@ -397,8 +413,10 @@ rule methylation_extraction_SE_parent_2:
 		genome = config["GENOME_PARENT_2"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -412,8 +430,10 @@ rule methylation_extraction_SE_allo_1:
 		genome = config["GENOME_PARENT_1"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -427,8 +447,10 @@ rule methylation_extraction_SE_allo_2:
 		genome = config["GENOME_PARENT_2"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 1
 
@@ -443,8 +465,10 @@ rule methylation_extraction_PE_parent_1:
 		genome = config["GENOME_PARENT_1"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 2
 
@@ -459,8 +483,10 @@ rule methylation_extraction_PE_parent_2:
 		genome = config["GENOME_PARENT_2"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -475,8 +501,10 @@ rule methylation_extraction_PE_allo_1:
 		genome = config["GENOME_PARENT_1"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -491,8 +519,10 @@ rule methylation_extraction_PE_allo_2:
 		genome = config["GENOME_PARENT_2"]
 	conda:
 		"envs/environment.yaml"
+	threads:
+		BISMARK_CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (parent 1)
 
@@ -639,11 +669,13 @@ rule dmrseq_CG:
 		n_samples_p2 = n_samples_p2,
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
+	threads:
+		config["CORES_NUMBER"]
 	conda:
 		"envs/environment_R.yaml"
 	shell:
-		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {CORES} {input.p1} {input.allo};"
-		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {CORES} {input.p2} {input.allo}"
+		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
+		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
 
 
 ## Define a function to create an input for MultiQC to include all the settings specified in the config file.
