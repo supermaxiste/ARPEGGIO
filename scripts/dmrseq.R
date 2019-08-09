@@ -1,5 +1,5 @@
 ########################### DMR Seq ###########################
-# This script takes as input four paths to four cov files for 
+# This script takes as input four paths to four cov files for
 # a specific context (order MUST be parent x2 followed by KAM x2)
 # The fifth argument is the name of the output file and sixth number of cores
 
@@ -9,7 +9,7 @@ library(BiocParallel)
 
 # Four command line arguements are needed: first is the number of samples
 # for the first species analyzed, second is the number of samples for the
-# second species analyzed, third is the output name with extension and 
+# second species analyzed, third is the output name with extension and
 # fourth is the number of cores.After those four, the cov files from the
 # two species you want to compare need to be added (as many as you have)
 
@@ -47,7 +47,7 @@ for (i in 1:sample_counter){
 # Read cov files
 
 bismarkBSseq <- read.bismark(files = c(cov_files),
-                             rmZeroCov = TRUE, 
+                             rmZeroCov = TRUE,
                              strandCollapse = FALSE,
                              verbose = TRUE)
 
@@ -64,7 +64,7 @@ bs.filtered <- bismarkBSseq[loci.idx, sample.idx]
 register(MulticoreParam(cores))
 
 # DMRseq function, normally takes around 1.5h
-regions <- dmrseq(bs = bs.filtered, testCovariate = "Species", cutoff = 0.01)
+regions <- dmrseq(bs = bs.filtered, testCovariate = "Species", cutoff = 0.1)
 
 #This took about 1.5 h
 write.csv(as.data.frame(regions), file=output)
