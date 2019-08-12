@@ -42,7 +42,11 @@ rule all:
 	input:
 		OUTPUT_DIR + "MultiQC/multiqc_report.html",
 		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"
+		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt",
+		OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
+		OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt",
+		OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
+		OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"
 
 ##### The following pseudo-rules generate output files for the main rules #####
 # Pseudo-Rule for Quality Control with FastQC on raw read files
@@ -664,6 +668,82 @@ rule dmrseq_CG:
 	output:
 		comparison1 = OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
 		comparison2 = OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"
+	params:
+		n_samples_p1 = n_samples_p1,
+		n_samples_p2 = n_samples_p2,
+		n_samples_allo = n_samples_allo,
+		script = "scripts/dmrseq.R"
+	threads:
+		config["CORES_NUMBER"]
+	conda:
+		"envs/environment_R.yaml"
+	shell:
+		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
+		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+
+def dmrseq_CHG_input_p1(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+	return input
+
+def dmrseq_CHG_input_p2(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+	return input
+
+def dmrseq_CHG_input_allo(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
+	return input
+
+# Run dmrseq for CHG context
+
+rule dmrseq_CHG:
+	input:
+		p1 = dmrseq_CHG_input_p1,
+		p2 = dmrseq_CHG_input_p2,
+		allo = dmrseq_CHG_input_allo
+	output:
+		comparison1 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
+		comparison2 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt"
+	params:
+		n_samples_p1 = n_samples_p1,
+		n_samples_p2 = n_samples_p2,
+		n_samples_allo = n_samples_allo,
+		script = "scripts/dmrseq.R"
+	threads:
+		config["CORES_NUMBER"]
+	conda:
+		"envs/environment_R.yaml"
+	shell:
+		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
+		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+
+def dmrseq_CHH_input_p1(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+	return input
+
+def dmrseq_CHH_input_p2(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+	return input
+
+def dmrseq_CHH_input_allo(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
+	return input
+
+# Run dmrseq for CHH context
+
+rule dmrseq_CHH:
+	input:
+		p1 = dmrseq_CHH_input_p1,
+		p2 = dmrseq_CHH_input_p2,
+		allo = dmrseq_CHH_input_allo
+	output:
+		comparison1 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
+		comparison2 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"
 	params:
 		n_samples_p1 = n_samples_p1,
 		n_samples_p2 = n_samples_p2,
