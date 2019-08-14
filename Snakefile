@@ -173,6 +173,7 @@ rule bismark_prepare_genome:
 
 rule bismark_alignment_SE_1:
 	input:
+		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
 		sample = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam",
@@ -194,6 +195,7 @@ rule bismark_alignment_SE_1:
 
 rule bismark_alignment_SE_2:
 	input:
+		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
 		sample = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam",
@@ -215,6 +217,7 @@ rule bismark_alignment_SE_2:
 
 rule bismark_alignment_PE_1:
 	input:
+		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
@@ -237,6 +240,7 @@ rule bismark_alignment_PE_1:
 
 rule bismark_alignment_PE_2:
 	input:
+		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
