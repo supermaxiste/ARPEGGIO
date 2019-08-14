@@ -37,21 +37,26 @@ n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
 
 # General rule to run all analyses, this rule is needed as Snakemake executes only the first rules
 
+def all_input(wildcards):
+	input = []
+	if config["RUN_DMR_ANALYSIS"]:
+		if config["ONLY_CG_CONTEXT"]:
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"))
+		else:
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"))
+	return input
+
 ## Run all analyses
 rule all:
 	input:
 		OUTPUT_DIR + "MultiQC/multiqc_report.html",
-		if config["RUN_DMR_ANALYSIS"]:
-			if config["ONLY_CG_CONTEXT"]:
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"
-			else:
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt",
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt",
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
-				OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"
+		all_input
 
 ######################### Main rules of ARPEGGIO #############################
 
