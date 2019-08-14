@@ -827,8 +827,8 @@ def multiqc_input(wildcards):
 			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
 			## qualimap
-			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_bamqc/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_bamqc/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/qualimapReport.html", sample = samples.name[(samples.type == 'PE') & (samples.origin == 'allopolyploid')].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/qualimapReport.html", sample = samples.name[(samples.type == 'PE') & (samples.origin == 'allopolyploid')].values.tolist()))
 		else:
