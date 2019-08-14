@@ -41,12 +41,17 @@ n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
 rule all:
 	input:
 		OUTPUT_DIR + "MultiQC/multiqc_report.html",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
-		OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"
+		if config["RUN_DMR_ANALYSIS"]:
+			if config["ONLY_CG_CONTEXT"]:
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"
+			else:
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt",
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt",
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
+				OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"
 
 ######################### Main rules of ARPEGGIO #############################
 

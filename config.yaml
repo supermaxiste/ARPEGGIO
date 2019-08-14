@@ -61,3 +61,10 @@ GENOME_PARENT_2: example/genomes/parent2/
 PHRED_SCORE_64: True
 ASSEMBLY_PARENT_1: example/genomes/parent1/parent1.fa
 ASSEMBLY_PARENT_2: example/genomes/parent2/parent2.fa
+
+
+###############################################################################
+##############                    DMR ANALYSIS                    ##############
+###############################################################################
+
+ONLY_CG_CONTEXT: False
