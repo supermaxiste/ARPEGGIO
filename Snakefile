@@ -37,26 +37,29 @@ n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
 
 # General rule to run all analyses, this rule is needed as Snakemake executes only the first rules
 
-def all_input(wildcards):
+def dmr_input(wildcards):
 	input = []
+	if config["RUN_DOWNSTREAM"]:
+		if config["ONLY_CG_CONTEXT"]:
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
+		else:
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 	if config["RUN_DMR_ANALYSIS"]:
 		if config["ONLY_CG_CONTEXT"]:
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt"))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
 		else:
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt"))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt"))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt"))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt"))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 	return input
 
 ## Run all analyses
 rule all:
 	input:
 		OUTPUT_DIR + "MultiQC/multiqc_report.html",
-		all_input
+		dmr_input
 
 ######################### Main rules of ARPEGGIO #############################
 
@@ -87,13 +90,17 @@ rule trim_galore_se:
 	output:
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz"
 	params:
-		FASTQtrimmeddir = OUTPUT_DIR + "FASTQtrimmed"
+		FASTQtrimmeddir = OUTPUT_DIR + "FASTQtrimmed",
+		trim_5_r1 = config["CLIP_5_R1"],
+		trim_5_r2 = config["CLIP_5_R2"],
+		trim_3_r1 = config["CLIP_3_R1"],
+		trim_3_r2 = config["CLIP_3_R2"]
 	log:
 		OUTPUT_DIR + "logs/trimgalore_{sample}.log"
 	conda:
 		"envs/environment.yaml"
 	shell:
-		"trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}"
+		"trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}" if config["TRIM"] else "trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}"
 
 ## For paired-end reads
 
@@ -105,14 +112,18 @@ rule trim_galore_pe:
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz",
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz"
 	params:
-		FASTQtrimmeddir = OUTPUT_DIR + "FASTQtrimmed"
+		FASTQtrimmeddir = OUTPUT_DIR + "FASTQtrimmed",
+		trim_5_r1 = config["CLIP_5_R1"],
+		trim_5_r2 = config["CLIP_5_R2"],
+		trim_3_r1 = config["CLIP_3_R1"],
+		trim_3_r2 = config["CLIP_3_R2"]
 	log:
 		OUTPUT_DIR + "logs/trimgalore_{sample}.log"
 	conda:
 		"envs/environment.yaml"
 	shell:
 		"echo 'TrimGalore! version:\n' > {log}; trim_galore --version >> {log};"
-		"trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}"
+		"trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}" if config["TRIM"] else "trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}"
 
 ## Run FastQC on SE trimmed reads resulting from trim_galore
 
@@ -176,11 +187,12 @@ rule bismark_alignment_SE_1:
 		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam",
-		report = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2_SE_report.txt"
+		sample = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_bismark_bt2.bam",
+		report = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_bismark_bt2_SE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/{sample}_1/",
-		genome1 = config["GENOME_PARENT_1"]
+		genome1 = config["GENOME_PARENT_1"],
+		prefix = "1"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
@@ -189,7 +201,7 @@ rule bismark_alignment_SE_1:
 		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
+		"bismark --prefix {params.prefix} --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are single-end.
 
@@ -198,11 +210,12 @@ rule bismark_alignment_SE_2:
 		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam",
-		report = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2_SE_report.txt"
+		sample = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_bismark_bt2.bam",
+		report = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_bismark_bt2_SE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/{sample}_2/",
-		genome2 = config["GENOME_PARENT_2"]
+		genome2 = config["GENOME_PARENT_2"],
+		prefix = "2"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
@@ -211,7 +224,7 @@ rule bismark_alignment_SE_2:
 		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
+		"bismark --prefix {params.prefix} --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
 
@@ -221,11 +234,12 @@ rule bismark_alignment_PE_1:
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam",
-		report = OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_PE_report.txt"
+		sample = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.bam",
+		report = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_PE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/{sample}_1/",
-		genome1 = config["GENOME_PARENT_1"]
+		genome1 = config["GENOME_PARENT_1"],
+		prefix = "1"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
@@ -234,7 +248,7 @@ rule bismark_alignment_PE_1:
 		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --prefix {params.prefix} --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are paired-end.
 
@@ -244,11 +258,12 @@ rule bismark_alignment_PE_2:
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam",
-		report = OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_PE_report.txt"
+		sample = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.bam",
+		report = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_PE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/{sample}_2/",
-		genome2 = config["GENOME_PARENT_2"]
+		genome2 = config["GENOME_PARENT_2"],
+		prefix = "2"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
 	conda:
@@ -257,15 +272,15 @@ rule bismark_alignment_PE_2:
 		BISMARK_CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {threads} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --prefix {params.prefix} --multicore {threads} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 ## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_1)
 
 rule deduplication_SE_1:
 	input:
-		OUTPUT_DIR + "Bismark/{sample}_1/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_bismark_bt2.bam"
 	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
 	params:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
 	log:
@@ -279,9 +294,9 @@ rule deduplication_SE_1:
 
 rule deduplication_SE_2:
 	input:
-		OUTPUT_DIR + "Bismark/{sample}_2/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_bismark_bt2.bam"
 	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
 	params:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
 	log:
@@ -295,9 +310,9 @@ rule deduplication_SE_2:
 
 rule deduplication_PE_1:
 	input:
-		OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam"
+		OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.bam"
 	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	params:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
 	log:
@@ -311,9 +326,9 @@ rule deduplication_PE_1:
 
 rule deduplication_PE_2:
 	input:
-		OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam"
+		OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.bam"
 	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	params:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
 	log:
@@ -327,8 +342,8 @@ rule deduplication_PE_2:
 
 rule read_sorting_SE:
 	input:
-		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam",
-		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
+		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam",
+		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam",
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam"
@@ -345,8 +360,8 @@ rule read_sorting_SE:
 
 rule read_sorting_PE:
 	input:
-		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam",
-		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam",
+		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam",
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam"
@@ -361,15 +376,15 @@ rule read_sorting_PE:
 
 rule bam_sorting:
 	input:
-		p1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam"),
-		p2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"),
-		allo1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam")),
-		allo2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"))
+		p1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"),
+		p2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"),
+		allo1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam")),
+		allo2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"))
 	output:
-		o1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated_sorted.bam"),
-		o2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated_sorted.bam"),
-		o3 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated_sorted.bam")),
-		o4 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated_sorted.bam"))
+		o1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam"),
+		o2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam"),
+		o3 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")),
+		o4 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam"))
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -382,7 +397,7 @@ rule bam_sorting:
 
 rule qualimap_p1:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated_sorted.bam")
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html"
 	params:
@@ -396,7 +411,7 @@ rule qualimap_p1:
 
 rule qualimap_p2:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated_sorted.bam")
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html"
 	params:
@@ -410,8 +425,8 @@ rule qualimap_p2:
 
 rule qualimap_allo_se:
 	input:
-		genome1 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated_sorted.bam",
-		genome2 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated_sorted.bam"
+		genome1 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam",
+		genome2 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam"
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html",
 		OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html"
@@ -428,8 +443,8 @@ rule qualimap_allo_se:
 
 rule qualimap_allo_pe:
 	input:
-		genome1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam",
-		genome2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam"
+		genome1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam",
+		genome2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam"
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/qualimapReport.html",
 		OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/qualimapReport.html"
@@ -446,9 +461,9 @@ rule qualimap_allo_pe:
 
 rule methylation_extraction_SE_parent_1:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
 		genome = config["GENOME_PARENT_1"]
@@ -463,9 +478,9 @@ rule methylation_extraction_SE_parent_1:
 
 rule methylation_extraction_SE_parent_2:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/",
 		genome = config["GENOME_PARENT_2"]
@@ -480,9 +495,9 @@ rule methylation_extraction_SE_parent_2:
 
 rule methylation_extraction_SE_allo_1:
 	input:
-		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_se/" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/" ,
 		genome = config["GENOME_PARENT_1"]
@@ -497,9 +512,9 @@ rule methylation_extraction_SE_allo_1:
 
 rule methylation_extraction_SE_allo_2:
 	input:
-		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_se/" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
 		genome = config["GENOME_PARENT_2"]
@@ -514,10 +529,10 @@ rule methylation_extraction_SE_allo_2:
 
 rule methylation_extraction_PE_parent_1:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
 		genome = config["GENOME_PARENT_1"]
@@ -532,10 +547,10 @@ rule methylation_extraction_PE_parent_1:
 
 rule methylation_extraction_PE_parent_2:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/",
 		genome = config["GENOME_PARENT_2"]
@@ -550,10 +565,10 @@ rule methylation_extraction_PE_parent_2:
 
 rule methylation_extraction_PE_allo_1:
 	input:
-		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam"
+		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
-		 OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		 OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		 OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		 OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_1/",
 		genome = config["GENOME_PARENT_1"]
@@ -568,10 +583,10 @@ rule methylation_extraction_PE_allo_1:
 
 rule methylation_extraction_PE_allo_2:
 	input:
-		 OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam"
+		 OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
 		genome = config["GENOME_PARENT_2"]
@@ -586,7 +601,7 @@ rule methylation_extraction_PE_allo_2:
 
 rule coverage2cytosine_1:
 	input:
-		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}_bismark_bt2.deduplicated.bismark.cov.gz")
+		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz")
 	output:
 		o1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}.CX_report.txt"
 	params:
@@ -601,7 +616,7 @@ rule coverage2cytosine_1:
 
 rule coverage2cytosine_2:
 	input:
-		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}_bismark_bt2.deduplicated.bismark.cov.gz")
+		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz")
 	output:
 		o2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}.CX_report.txt"
 	params:
@@ -616,8 +631,8 @@ rule coverage2cytosine_2:
 
 rule coverage2cytosine_allo:
 	input:
-		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_bismark_bt2.deduplicated.bismark.cov.gz")),
-		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_bismark_bt2.deduplicated.bismark.cov.gz"))
+		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz")),
+		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"))
 	output:
 		o1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}.CX_report.txt",
 		o2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}.CX_report.txt"
@@ -835,11 +850,11 @@ def multiqc_input(wildcards):
 	if config["RUN_BISMARK"]:
 		if config["IS_PAIRED"]:
 			## alignment
-			input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
-			input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
 			## deduplication
-			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
-			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
 			## qualimap
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
@@ -849,11 +864,11 @@ def multiqc_input(wildcards):
 			if config["RUN_TRIMMING"]:
 				## not paired, trimmed
 				## alignment
-				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_trimmed_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_trimmed_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_trimmed_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_trimmed_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
 				## deduplication
-				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
 				## qualimap
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
@@ -862,14 +877,14 @@ def multiqc_input(wildcards):
 			else:
 				## not paired, not trimmed
 				## alignment
-				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_bismark_bt2.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
 				## deduplication
-				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
 				## qualimap
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/{sample}_bismark_bt2.deduplicated_sorted_bamqc/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/{sample}_bismark_bt2.deduplicated_sorted_bamqc/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 
@@ -904,3 +919,53 @@ rule multiqc:
 	shell:
 		"echo 'MultiQC version:\n' > {log}; multiqc --version >> {log}; "
 		"multiqc {params.inputdir} -f -o {params.multiqcdir}"
+
+rule dm_regions_bed:
+	input:
+		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt",
+		i2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt"
+	output:
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_sig_sorted.bed",
+		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_sig_sorted.bed"
+	params:
+		p1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_sig",
+		p2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_sig"
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"Rscript scripts/significantGenesToBed.R {input.i1} {params.p1};"
+		"Rscript scripts/significantGenesToBed.R {input.i2} {params.p2}"
+
+rule bedtools_intersect:
+	input:
+		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_sig_sorted.bed",
+		i2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_sig_sorted.bed"
+	output:
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_genes_overlap.txt",
+		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_genes_overlap.txt"
+	params:
+		anno1 = config["ANNOTATION_PARENT_1"],
+		anno2 = config["ANNOTATION_PARENT_2"]
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"bedtools intersect -a {anno1} -b {i1} -wo > {o1};"
+		"bedtools intersect -a {anno2} -b {i2} -wo > {o2}"
+
+rule dmr_genes:
+	input:
+		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_genes_overlap.txt",
+		i2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_genes_overlap.txt",
+		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt",
+		dm2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt"
+	output:
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt",
+		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt"
+	params:
+		geneID1 = config["GENE_ID_PARENT_1"],
+		geneID2 = config["GENE_ID_PARENT_2"]
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {output.o1};"
+		"Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {output.o2}"

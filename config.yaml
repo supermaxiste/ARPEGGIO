@@ -28,6 +28,7 @@ GENOME_PREPARATION: True
 RUN_BISMARK: True
 RUN_READ_SORTING: True
 RUN_DMR_ANALYSIS: True
+RUN_DOWNSTREAM: False
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
@@ -44,6 +45,22 @@ RAW_DATA: example/Raw_data
 PAIR_1: R1
 PAIR_2: R2
 RAW_DATA_EXTENSION: fastq
+
+###############################################################################
+###############                    TRIMMING                     ###############
+###############################################################################
+
+TRIM: False
+
+# 5' bases to trim if TRIM=True
+
+CLIP_5_R1: 1
+CLIP_5_R2: 1
+
+# 3' bases to trimm if TRIM=True
+
+CLIP_3_R1: 1
+CLIP_3_R2: 1
 
 ###############################################################################
 ###############                    ALIGNMENT                    ###############
@@ -67,4 +84,18 @@ ASSEMBLY_PARENT_2: example/genomes/parent2/parent2.fa
 ##############                    DMR ANALYSIS                    ##############
 ###############################################################################
 
+# Specify DMR analysis only for CG context
 ONLY_CG_CONTEXT: False
+
+###############################################################################
+##############                 DOWNSTREAM ANALYSIS               ##############
+###############################################################################
+
+# Path to annotation files
+ANNOTATION_PARENT_1: example/genomes/parent1/anno1.gff
+ANNOTATION_PARENT_2: example/genomes/parent2/anno2.gff
+
+# In the 9th column of the annotation file (attributes), there should be a geneID string such as ID=AT123456. Please specify the geneID string for each parent!
+# Common strings: ID, geneID, gene
+GENE_ID_PARENT_1: "ID"
+GENE_ID_PARENT_2: "ID"

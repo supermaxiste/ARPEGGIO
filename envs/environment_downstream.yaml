@@ -1,0 +1,7 @@
+channels:
+  - bioconda
+  - r
+packages:
+  - r-data.table
+  - bedtools
+  - r-stringr
