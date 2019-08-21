@@ -1,7 +1,5 @@
 ########################### DMR Seq ###########################
-# This script takes as input four paths to four cov files for
-# a specific context (order MUST be parent x2 followed by KAM x2)
-# The fifth argument is the name of the output file and sixth number of cores
+# This script takes as input cov files from Bismark and outputs DMRs
 
 library(dmrseq)
 library(data.table)
@@ -9,9 +7,10 @@ library(BiocParallel)
 
 # Four command line arguements are needed: first is the number of samples
 # for the first species analyzed, second is the number of samples for the
-# second species analyzed, third is the output name with extension and
-# fourth is the number of cores.After those four, the cov files from the
-# two species you want to compare need to be added (as many as you have)
+# second species analyzed, third is the output name with extension and 
+# fourth is the number of cores. After those four, the cov files from the
+# two species you want to compare need to be added (as many as you have).
+# The order of the cov files MUST be diploid species first and polyploid species second
 
 comm_args <- commandArgs(trailingOnly = TRUE)
 
@@ -47,7 +46,7 @@ for (i in 1:sample_counter){
 # Read cov files
 
 bismarkBSseq <- read.bismark(files = c(cov_files),
-                             rmZeroCov = TRUE,
+                             rmZeroCov = TRUE, 
                              strandCollapse = FALSE,
                              verbose = TRUE)
 
@@ -64,7 +63,16 @@ bs.filtered <- bismarkBSseq[loci.idx, sample.idx]
 register(MulticoreParam(cores))
 
 # DMRseq function, normally takes around 1.5h
-regions <- dmrseq(bs = bs.filtered, testCovariate = "Species", cutoff = 0.1)
+regions <- dmrseq(bs = bs.filtered, testCovariate = "Species")
+
+# Save Robject
+
+outputR <- paste0(substr(output, 1, nchar(output)-3), "Rdata")
+save(regions, file = outputR)
 
 #This took about 1.5 h
-write.csv(as.data.frame(regions), file=output)
+regions_dataframe <- as.data.frame(regions)
+colnames(regions_dataframe) <- c("seqnames", "start", "end", "width", 
+                                 "strand", "L", "area", "beta", "stat", "pval", 
+                                 "qval", "index.start", "index.end", "index.width")
+write.csv(regions_dataframe, file=output, quote = FALSE, row.names = FALSE, col.names = TRUE)

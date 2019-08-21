@@ -3,5 +3,7 @@ parent11	PE	parent1
 parent12	PE	parent1
 parent21	PE	parent2
 parent22	PE	parent2
-allopolyploid11	PE	allopolyploid
-allopolyploid12	PE	allopolyploid
+allo11_final	PE	allopolyploid
+allo21_final	PE	allopolyploid
+allo31_final    PE      allopolyploid
+allo41_final    PE      allopolyploid
