@@ -24,11 +24,10 @@ EAGLE: /home/travis/build/supermaxiste/ARPEGGIO/htslib-1.9/eagle/eagle-rc
 
 IS_PAIRED: True
 RUN_TRIMMING: True
-GENOME_PREPARATION: True
 RUN_BISMARK: True
 RUN_READ_SORTING: True
 RUN_DMR_ANALYSIS: True
-RUN_DOWNSTREAM: False
+RUN_DOWNSTREAM: True
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
@@ -50,14 +49,20 @@ RAW_DATA_EXTENSION: fastq
 ###############                    TRIMMING                     ###############
 ###############################################################################
 
-TRIM: False
+# Perform trimming just on the 5' side
 
-# 5' bases to trim if TRIM=True
+TRIM_5_ONLY: False
+
+# 5' bases to trim
 
 CLIP_5_R1: 1
 CLIP_5_R2: 1
 
-# 3' bases to trimm if TRIM=True
+# Perform trimming just on the 3' side
+
+TRIM_3_ONLY: False
+
+# 3' bases to trim
 
 CLIP_3_R1: 1
 CLIP_3_R2: 1
@@ -75,7 +80,7 @@ GENOME_PARENT_2: example/genomes/parent2/
 ##############                    READ SORTING                    ##############
 ###############################################################################
 
-PHRED_SCORE_64: True
+PHRED_SCORE_64: False
 ASSEMBLY_PARENT_1: example/genomes/parent1/parent1.fa
 ASSEMBLY_PARENT_2: example/genomes/parent2/parent2.fa
 

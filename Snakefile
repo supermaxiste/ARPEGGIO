@@ -25,6 +25,8 @@ def getpath(str):
 # Save output directory, raw data directory and FastQC directory
 OUTPUT_DIR = getpath(config["OUTPUT"])
 RAW_DATA_DIR = getpath(config["RAW_DATA"])
+GENOME_1 = getpath(config["GENOME_PARENT_1"])
+GENOME_2 = getpath(config["GENOME_PARENT_2"])
 EAGLE = config["EAGLE"]
 CORES = config["CORES_NUMBER"]
 BISMARK_CORES = round(config["CORES_NUMBER"]/3) if config["CORES_NUMBER"]>2 else 1
@@ -92,15 +94,13 @@ rule trim_galore_se:
 	params:
 		FASTQtrimmeddir = OUTPUT_DIR + "FASTQtrimmed",
 		trim_5_r1 = config["CLIP_5_R1"],
-		trim_5_r2 = config["CLIP_5_R2"],
-		trim_3_r1 = config["CLIP_3_R1"],
-		trim_3_r2 = config["CLIP_3_R2"]
+		trim_3_r1 = config["CLIP_3_R1"]
 	log:
 		OUTPUT_DIR + "logs/trimgalore_{sample}.log"
 	conda:
 		"envs/environment.yaml"
 	shell:
-		"trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}" if config["TRIM"] else "trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}"
+		"trim_galore -q 20 --clip_R1 {params.trim_5_r1} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}" if config["RUN_TRIMMING"] and config["TRIM_5_ONLY"] else ("trim_galore -q 20 --clip_R1 {params.trim_5_r1}  --three_prime_clip_R1 {params.trim_3_r1} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}" if config["RUN_TRIMMING"] and config["TRIM_3_ONLY"] else ("trim_galore -q 20 --clip_R1 {params.trim_5_r1}  --three_prime_clip_R1 {params.trim_3_r1} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}" if config["RUN_TRIMMING"] else "trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1}"))
 
 ## For paired-end reads
 
@@ -123,7 +123,7 @@ rule trim_galore_pe:
 		"envs/environment.yaml"
 	shell:
 		"echo 'TrimGalore! version:\n' > {log}; trim_galore --version >> {log};"
-		"trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}" if config["TRIM"] else "trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}"
+		"trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}" if config["RUN_TRIMMING"] and config["TRIM_5_ONLY"] else ("trim_galore -q 20 --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}" if config["RUN_TRIMMING"] and config["TRIM_3_ONLY"] else ("trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}" if config["RUN_TRIMMING"] else "trim_galore -q 20 --phred33 --length 20 -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2}"))
 
 ## Run FastQC on SE trimmed reads resulting from trim_galore
 
@@ -173,18 +173,19 @@ rule bismark_prepare_genome:
 		genome1 = config["GENOME_PARENT_1"],
 		genome2 = config["GENOME_PARENT_2"]
 	output:
-		OUTPUT_DIR + "Bisulfite_Genome"
+		GENOME_1 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
+		GENOME_2 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
 	conda:
 		"envs/environment.yaml"
 	shell:
-		"bismark_genome_preparation {input.genome1} > {output}; "
-		"bismark_genome_preparation {input.genome2} > {output}"
+		"bismark_genome_preparation {input.genome1}; "
+		"bismark_genome_preparation {input.genome2}"
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are single-end.
 
 rule bismark_alignment_SE_1:
 	input:
-		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+		GENOME_1 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
 		sample = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_bismark_bt2.bam",
@@ -198,16 +199,16 @@ rule bismark_alignment_SE_1:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --prefix {params.prefix} --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
+		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq}"
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are single-end.
 
 rule bismark_alignment_SE_2:
 	input:
-		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+		GENOME_2 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
 		sample = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_bismark_bt2.bam",
@@ -221,16 +222,16 @@ rule bismark_alignment_SE_2:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --prefix {params.prefix} --multicore {threads}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
+		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq}"
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
 
 rule bismark_alignment_PE_1:
 	input:
-		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+		GENOME_1 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
@@ -245,16 +246,16 @@ rule bismark_alignment_PE_1:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --prefix {params.prefix} --multicore {threads} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are paired-end.
 
 rule bismark_alignment_PE_2:
 	input:
-		OUTPUT_DIR + "Bisulfite_Genome" if config["GENOME_PREPARATION"] else "",
+		GENOME_2 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
@@ -269,10 +270,10 @@ rule bismark_alignment_PE_2:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --prefix {params.prefix} --multicore {threads} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 ## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_1)
 
@@ -374,22 +375,38 @@ rule read_sorting_PE:
 	shell:
 		"{EAGLE} --ngi --paired {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list}"
 
-rule bam_sorting:
+# sort bam files for multiqc
+
+rule bam_sorting_p1:
 	input:
-		p1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"),
-		p2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"),
-		allo1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam")),
-		allo2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"))
+		p1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam")
 	output:
-		o1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam"),
-		o2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam"),
-		o3 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")),
-		o4 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam"))
+		o1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	conda:
 		"envs/environment.yaml"
 	shell:
-		"samtools sort {input.p1} > {output.o1};"
-		"samtools sort {input.p2} > {output.o2};"
+		"samtools sort {input.p1} > {output.o1}"
+
+rule bam_sorting_p2:
+	input:
+		p2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"),
+	output:
+		o2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam")
+	conda:
+		"envs/environment.yaml"
+	shell:
+		"samtools sort {input.p2} > {output.o2}"
+
+rule bam_sorting_allo:
+	input:
+		allo1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam")),
+		allo2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"))
+	output:
+		o3 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted_allo.bam")),
+		o4 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"))
+	conda:
+		"envs/environment.yaml"
+	shell:
 		"samtools sort {input.allo1} > {output.o3};"
 		"samtools sort {input.allo2} > {output.o4}"
 
@@ -399,9 +416,9 @@ rule qualimap_p1:
 	input:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	output:
-		OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html"
+		OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html"
 	params:
-		output = OUTPUT_DIR + "qualimap/{sample}_1"
+		output = OUTPUT_DIR + "qualimap/{sample}_p1"
 	conda:
 		"envs/environment2.yaml"
 	shell:
@@ -413,9 +430,9 @@ rule qualimap_p2:
 	input:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	output:
-		OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html"
+		OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html"
 	params:
-		output = OUTPUT_DIR + "qualimap/{sample}_2"
+		output = OUTPUT_DIR + "qualimap/{sample}_p2"
 	conda:
 		"envs/environment2.yaml"
 	shell:
@@ -425,8 +442,8 @@ rule qualimap_p2:
 
 rule qualimap_allo_se:
 	input:
-		genome1 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam",
-		genome2 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam"
+		genome1 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted_allo.bam",
+		genome2 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html",
 		OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html"
@@ -443,8 +460,8 @@ rule qualimap_allo_se:
 
 rule qualimap_allo_pe:
 	input:
-		genome1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam",
-		genome2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam"
+		genome1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_allo.bam",
+		genome2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam"
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/qualimapReport.html",
 		OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/qualimapReport.html"
@@ -459,20 +476,7 @@ rule qualimap_allo_pe:
 
 ## Run Bismark methylation extraction on SE bam files for parent species 1
 
-rule methylation_extraction_SE_parent_1:
-	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
-	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
-	params:
-		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
-		genome = config["GENOME_PARENT_1"]
-	conda:
-		"envs/environment.yaml"
-	threads:
-		BISMARK_CORES
-	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+
 
 ## Run Bismark methylation extraction on SE bam files for parent species 2
 
@@ -487,9 +491,9 @@ rule methylation_extraction_SE_parent_2:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -504,9 +508,9 @@ rule methylation_extraction_SE_allo_1:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -521,9 +525,9 @@ rule methylation_extraction_SE_allo_2:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 1
 
@@ -539,9 +543,9 @@ rule methylation_extraction_PE_parent_1:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 2
 
@@ -557,9 +561,9 @@ rule methylation_extraction_PE_parent_2:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -575,9 +579,9 @@ rule methylation_extraction_PE_allo_1:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -593,9 +597,9 @@ rule methylation_extraction_PE_allo_2:
 	conda:
 		"envs/environment.yaml"
 	threads:
-		BISMARK_CORES
+		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {threads} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (parent 1)
 
@@ -836,8 +840,6 @@ def multiqc_input(wildcards):
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
 	else:
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist()))
-	if config["GENOME_PREPARATION"]:
-		input.extend(expand(OUTPUT_DIR + "Bisulfite_Genome"))
 	if config["RUN_TRIMMING"]:
 		if config["IS_PAIRED"]:
 			input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
@@ -856,8 +858,8 @@ def multiqc_input(wildcards):
 			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
 			## qualimap
-			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/qualimapReport.html", sample = samples.name[(samples.type == 'PE') & (samples.origin == 'allopolyploid')].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/qualimapReport.html", sample = samples.name[(samples.type == 'PE') & (samples.origin == 'allopolyploid')].values.tolist()))
 		else:
@@ -870,8 +872,8 @@ def multiqc_input(wildcards):
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
 				## qualimap
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 			else:
@@ -883,8 +885,8 @@ def multiqc_input(wildcards):
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
 				## qualimap
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 
@@ -892,9 +894,7 @@ def multiqc_input(wildcards):
 
 ## Define a function to create input directories based on the settings in the config file
 def multiqc_params(wildcards):
-	param = [OUTPUT_DIR + "FastQC", OUTPUT_DIR + "Bismark"]
-	if config["GENOME_PREPARATION"]:
-		param.append(OUTPUT_DIR + "Bisulfite_Genome")
+	param = [OUTPUT_DIR + "FastQC"]
 	if config["RUN_TRIMMING"]:
 		param.append(OUTPUT_DIR + "FASTQtrimmed")
 	if config["RUN_BISMARK"]:
@@ -949,8 +949,8 @@ rule bedtools_intersect:
 	conda:
 		"envs/environment_downstream.yaml"
 	shell:
-		"bedtools intersect -a {anno1} -b {i1} -wo > {o1};"
-		"bedtools intersect -a {anno2} -b {i2} -wo > {o2}"
+		"bedtools intersect -a {params.anno1} -b {input.i1} -wo > {output.o1};"
+		"bedtools intersect -a {params.anno2} -b {input.i2} -wo > {output.o2}"
 
 rule dmr_genes:
 	input:
@@ -963,9 +963,11 @@ rule dmr_genes:
 		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
-		geneID2 = config["GENE_ID_PARENT_2"]
+		geneID2 = config["GENE_ID_PARENT_2"],
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}",
+		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}"
 	conda:
 		"envs/environment_downstream.yaml"
 	shell:
-		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {output.o1};"
-		"Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {output.o2}"
+		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1};"
+		"Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {params.o2}"
