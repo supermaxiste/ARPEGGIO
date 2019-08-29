@@ -24,6 +24,15 @@ geneID <- comm_args[3]
 
 output_name <- comm_args[4]
 
+# Check if intersection file is empty 
+
+if (file.info(intersection)$size==0){
+  print("There was no intersection between significant DMRs and the annotation file. Returning empty file")
+  empty <- c("There was no intersection between significant DMRs and the annotation file")
+  write.table(empty, file=paste0(output_name, ".txt"), quote = FALSE, sep = "\t", 
+              row.names = FALSE, col.names = TRUE)
+} else {
+
 # Read, clean and name file columns
 
 intersection_file <- fread(intersection)
@@ -82,3 +91,5 @@ DM_genes_summary <- cbind(DM_genes_summary, methylation_status=m_status[correspo
 
 write.table(DM_genes_summary, file=paste0(output_name, ".txt"), quote = FALSE, sep = "\t", 
             row.names = FALSE, col.names = TRUE)
+
+}

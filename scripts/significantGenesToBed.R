@@ -20,6 +20,15 @@ candidate_regions <- fread(dmrseq_output)
 
 sig_regions <- candidate_regions[candidate_regions$qval < .05]
 
+# If no regions are found, create an empty file and print message
+
+if (nrow(sig_regions)==0){
+  print("dmrseq didn't find any significant regions: all DMRs had q-value > 0.05. Returning empty file")
+  empty <- c()
+  write.table(empty, file=paste0(output_name, "_sorted.bed"), quote = FALSE, sep = "\t", 
+              row.names = FALSE, col.names = FALSE)
+} else {
+
 # Select range of significant regions
 
 sig_regions_bed <- sig_regions[,c("seqnames", "start", "end")]
@@ -51,3 +60,4 @@ command <- paste("sort -k1,1 -k2,2n ", output_name, ".bed > ", output_name, "_so
                  sep = "")
 
 system(command = command)
+}

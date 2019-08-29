@@ -1,7 +1,8 @@
 channels:
   - bioconda
-  - r
+  - conda-forge
 dependencies:
   - r-data.table
   - bedtools
   - r-stringr
+  - r-stringi
