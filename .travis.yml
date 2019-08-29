@@ -8,7 +8,7 @@ dist: xenial
 install:
   - sudo apt-get update
   ## Setup htslib for eagle
-  - sudo apt-get install autoconf automake make gcc perl zlib1g-dev libbz2-dev liblzma-dev libcurl4-gnutls-dev libssl-dev libgfortran3
+  - sudo apt-get install autoconf automake make gcc perl zlib1g-dev libbz2-dev liblzma-dev libcurl4-gnutls-dev libssl-dev libgfortran3 r-base-core
   - wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2
   - tar -vxjf htslib-1.9.tar.bz2
   - cd htslib-1.9
