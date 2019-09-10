@@ -1,9 +1,9 @@
-name	type	origin
-parent11	PE	parent1
-parent12	PE	parent1
-parent21	PE	parent2
-parent22	PE	parent2
-allo11_final	PE	allopolyploid
-allo21_final	PE	allopolyploid
-allo31_final    PE      allopolyploid
-allo41_final    PE      allopolyploid
+name	type	origin	condition
+parent11	PE	parent1	A
+parent12	PE	parent1	A
+parent21	PE	parent2	B
+parent22	PE	parent2	B
+allo11_final	PE	allopolyploid	A
+allo21_final	PE	allopolyploid	A
+allo31_final	PE  	allopolyploid	B
+allo41_final	PE  	allopolyploid	B

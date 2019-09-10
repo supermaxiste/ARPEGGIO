@@ -27,7 +27,16 @@ RUN_TRIMMING: True
 RUN_BISMARK: True
 RUN_READ_SORTING: True
 RUN_DMR_ANALYSIS: True
-RUN_DOWNSTREAM: True
+RUN_DOWNSTREAM: False
+
+###############################################################################
+###############                  SPECIAL MODES                  ###############
+###############################################################################
+
+# If you data includes only diploids or polyploids and/or you would like to compare two different conditions among same ploidy levels, then use the folllowing paramenters. Please remember to modify the metadata file accordingly
+
+POLYPLOID_ONLY: False
+DIPLOID_ONLY: False
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############

@@ -36,6 +36,12 @@ BISMARK_CORES = round(config["CORES_NUMBER"]/3) if config["CORES_NUMBER"]>2 else
 n_samples_p1 = len(samples.name[samples.origin == "parent1"])
 n_samples_p2 = len(samples.name[samples.origin == "parent2"])
 n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
+if config["POLYPLOID_ONLY"]:
+	n_samples_A = len(samples.name[(samples.origin == "allopolyploid") & (samples.condition == "A")])
+	n_samples_B = len(samples.name[(samples.origin == "allopolyploid") & (samples.condition == "B")])
+if config["DIPLOID_ONLY"]:
+	n_samples_A = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "A")])
+	n_samples_B = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "B")])
 
 # General rule to run all analyses, this rule is needed as Snakemake executes only the first rules
 
@@ -43,18 +49,40 @@ def dmr_input(wildcards):
 	input = []
 	if config["RUN_DOWNSTREAM"]:
 		if config["ONLY_CG_CONTEXT"]:
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
 		else:
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 	if config["RUN_DMR_ANALYSIS"]:
 		if config["ONLY_CG_CONTEXT"]:
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
 		else:
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 	return input
 
 ## Run all analyses
@@ -75,6 +103,8 @@ rule quality_control:
 		FastQC = OUTPUT_DIR + "FastQC"
 	log:
 		OUTPUT_DIR + "logs/fastqc_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qc_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -97,6 +127,8 @@ rule trim_galore_se:
 		trim_3_r1 = config["CLIP_3_R1"]
 	log:
 		OUTPUT_DIR + "logs/trimgalore_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/trim_se_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -119,6 +151,8 @@ rule trim_galore_pe:
 		trim_3_r2 = config["CLIP_3_R2"]
 	log:
 		OUTPUT_DIR + "logs/trimgalore_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/trim_pe_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -136,6 +170,8 @@ rule quality_control_trimmed_SE:
 		FastQC = OUTPUT_DIR + "FASTQtrimmed/"
 	log:
 		OUTPUT_DIR + "logs/fastqc_trimmed_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qc_trim_se_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -157,6 +193,8 @@ rule quality_control_trimmed_PE:
 		FastQC = OUTPUT_DIR + "FASTQtrimmed/"
 	log:
 		OUTPUT_DIR + "logs/fastqc_trimmed_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qc_trim_pe_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -175,6 +213,8 @@ rule bismark_prepare_genome:
 	output:
 		GENOME_1 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
 		GENOME_2 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
+	benchmark:
+		OUTPUT_DIR + "benchmark/prepare_genome.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -196,6 +236,8 @@ rule bismark_alignment_SE_1:
 		prefix = "1"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/bismark_se1_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -219,6 +261,8 @@ rule bismark_alignment_SE_2:
 		prefix = "2"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/bismark_se2_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -243,6 +287,8 @@ rule bismark_alignment_PE_1:
 		prefix = "1"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/bismark_pe1_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -267,6 +313,8 @@ rule bismark_alignment_PE_2:
 		prefix = "2"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/bismark_pe2_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	threads:
@@ -286,6 +334,8 @@ rule deduplication_SE_1:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dedup_se1_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -302,6 +352,8 @@ rule deduplication_SE_2:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dedup_se2_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -318,6 +370,8 @@ rule deduplication_PE_1:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dedup_pe1_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -334,6 +388,8 @@ rule deduplication_PE_2:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
 	log:
 		OUTPUT_DIR + "logs/bismark_{sample}.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dedup_pe2_{sample}.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
@@ -348,6 +404,8 @@ rule read_sorting_SE:
 	output:
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam",
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam"
+	benchmark:
+		OUTPUT_DIR + "benchmark/readsorting_se_{sample}.txt"
 	params:
 		list = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified_reads.list",
 		phred = "--phred64" if config["PHRED_SCORE_64"] else "",
@@ -366,6 +424,8 @@ rule read_sorting_PE:
 	output:
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam",
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam"
+	benchmark:
+		OUTPUT_DIR + "benchmark/readsorting_pe_{sample}.txt"
 	params:
 		list = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified_reads.list",
 		phred = "--phred64" if config["PHRED_SCORE_64"] else "",
@@ -417,6 +477,8 @@ rule qualimap_p1:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qualimap_p1_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "qualimap/{sample}_p1"
 	conda:
@@ -431,6 +493,8 @@ rule qualimap_p2:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qualimap_p2_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "qualimap/{sample}_p2"
 	conda:
@@ -447,6 +511,8 @@ rule qualimap_allo_se:
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html",
 		OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qualimap_allo_se_{sample}.txt"
 	params:
 		output1 = OUTPUT_DIR + "qualimap/{sample}_allo_se_1/",
 		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_se_2/"
@@ -465,6 +531,8 @@ rule qualimap_allo_pe:
 	output:
 		OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/qualimapReport.html",
 		OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/qualimapReport.html"
+	benchmark:
+		OUTPUT_DIR + "benchmark/qualimap_allo_pe_{sample}.txt"
 	params:
 		output1 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/",
 		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/"
@@ -476,6 +544,22 @@ rule qualimap_allo_pe:
 
 ## Run Bismark methylation extraction on SE bam files for parent species 1
 
+rule methylation_extraction_SE_parent_1:
+	input:
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam"
+	output:
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_se_p1_{sample}.txt"
+	params:
+		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
+		genome = config["GENOME_PARENT_1"]
+	conda:
+		"envs/environment.yaml"
+	threads:
+		CORES
+	shell:
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 
 ## Run Bismark methylation extraction on SE bam files for parent species 2
@@ -485,6 +569,8 @@ rule methylation_extraction_SE_parent_2:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_se_p2_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/",
 		genome = config["GENOME_PARENT_2"]
@@ -502,6 +588,8 @@ rule methylation_extraction_SE_allo_1:
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_se_allo1_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_se/" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/" ,
 		genome = config["GENOME_PARENT_1"]
@@ -519,6 +607,8 @@ rule methylation_extraction_SE_allo_2:
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_se_allo2_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_se/" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
 		genome = config["GENOME_PARENT_2"]
@@ -537,6 +627,8 @@ rule methylation_extraction_PE_parent_1:
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_pe_p1_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
 		genome = config["GENOME_PARENT_1"]
@@ -555,6 +647,8 @@ rule methylation_extraction_PE_parent_2:
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_pe_p2_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/",
 		genome = config["GENOME_PARENT_2"]
@@ -571,8 +665,10 @@ rule methylation_extraction_PE_allo_1:
 	input:
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
-		 OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		 OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+	benchmark:
+ 		OUTPUT_DIR + "benchmark/extraction_pe_allo1_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_1/",
 		genome = config["GENOME_PARENT_1"]
@@ -591,6 +687,8 @@ rule methylation_extraction_PE_allo_2:
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
 		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+	benchmark:
+		OUTPUT_DIR + "benchmark/extraction_pe_allo2_{sample}.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
 		genome = config["GENOME_PARENT_2"]
@@ -608,6 +706,8 @@ rule coverage2cytosine_1:
 		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz")
 	output:
 		o1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}.CX_report.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/c2c_1_{sample}.txt"
 	params:
 		genome1 = config["GENOME_PARENT_1"],
 		filename1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}"
@@ -623,6 +723,8 @@ rule coverage2cytosine_2:
 		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz")
 	output:
 		o2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}.CX_report.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/c2c_2_{sample}.txt"
 	params:
 		genome2 = config["GENOME_PARENT_2"],
 		filename2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}"
@@ -640,6 +742,8 @@ rule coverage2cytosine_allo:
 	output:
 		o1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}.CX_report.txt",
 		o2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}.CX_report.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/c2c_allo_{sample}.txt"
 	params:
 		genome1 = config["GENOME_PARENT_1"],
 		genome2 = config["GENOME_PARENT_2"],
@@ -741,6 +845,8 @@ rule dmrseq_CG:
 	output:
 		comparison1 = OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
 		comparison2 = OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dmrseq_CG.txt"
 	params:
 		n_samples_p1 = n_samples_p1,
 		n_samples_p2 = n_samples_p2,
@@ -753,6 +859,8 @@ rule dmrseq_CG:
 	shell:
 		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
 		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+
+# Define a function to create an input for dmrseq_CHG to include all the samples from the previous steps
 
 def dmrseq_CHG_input_p1(wildcards):
 	input = []
@@ -779,6 +887,8 @@ rule dmrseq_CHG:
 	output:
 		comparison1 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
 		comparison2 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dmrseq_CHG.txt"
 	params:
 		n_samples_p1 = n_samples_p1,
 		n_samples_p2 = n_samples_p2,
@@ -791,6 +901,8 @@ rule dmrseq_CHG:
 	shell:
 		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
 		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+
+# Define a function to create an input for dmrseq_CHH to include all the samples from the previous steps
 
 def dmrseq_CHH_input_p1(wildcards):
 	input = []
@@ -817,6 +929,8 @@ rule dmrseq_CHH:
 	output:
 		comparison1 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
 		comparison2 = OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dmrseq_CHH.txt"
 	params:
 		n_samples_p1 = n_samples_p1,
 		n_samples_p2 = n_samples_p2,
@@ -829,6 +943,105 @@ rule dmrseq_CHH:
 	shell:
 		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
 		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+
+## Rules for dmrseq comparing polyploids to polyploids or diploids to diploids based on conditions given in the metadata file
+
+def dmrseq_CG_special_input_A(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
+	return input
+
+def dmrseq_CG_special_input_B(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
+	return input
+
+rule dmrseq_CG_special:
+	input:
+		condA = dmrseq_CG_special_input_A,
+		condB = dmrseq_CG_special_input_B
+	output:
+		comparison = OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/CG_context/A_v_B_polyploid.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dmrseq_CG_special.txt"
+	threads:
+		config["CORES_NUMBER"]
+	conda:
+		"envs/environment_R.yaml"
+	shell:
+		"Rscript scripts/dmrseq.R {n_samples_B} {n_samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
+
+def dmrseq_CHG_special_input_A(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
+	return input
+
+def dmrseq_CHG_special_input_B(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
+	return input
+
+rule dmrseq_CHG_special:
+	input:
+		condA = dmrseq_CHG_special_input_A,
+		condB = dmrseq_CHG_special_input_B
+	output:
+		comparison = OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/A_v_B_polyploid.txt"
+	threads:
+		config["CORES_NUMBER"]
+	conda:
+		"envs/environment_R.yaml"
+	shell:
+		"Rscript scripts/dmrseq.R {n_samples_B} {n_samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
+
+def dmrseq_CHH_special_input_A(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
+	return input
+
+def dmrseq_CHH_special_input_B(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
+	return input
+
+rule dmrseq_CHH_special:
+	input:
+		condA = dmrseq_CHH_special_input_A,
+		condB = dmrseq_CHH_special_input_B
+	output:
+		comparison = OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/CHH_context/A_v_B_polyploid.txt"
+	benchmark:
+		OUTPUT_DIR + "benchmark/dmrseq_CHG_special.txt"
+	threads:
+		config["CORES_NUMBER"]
+	conda:
+		"envs/environment_R.yaml"
+	shell:
+		"Rscript scripts/dmrseq.R {n_samples_B} {n_samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
 
 
 ## Define a function to create an input for MultiQC to include all the settings specified in the config file.
@@ -889,10 +1102,10 @@ def multiqc_input(wildcards):
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
-
 	return input
 
 ## Define a function to create input directories based on the settings in the config file
+
 def multiqc_params(wildcards):
 	param = [OUTPUT_DIR + "FastQC"]
 	if config["RUN_TRIMMING"]:
@@ -914,11 +1127,17 @@ rule multiqc:
 		multiqcdir = OUTPUT_DIR + "MultiQC"
 	log:
 		OUTPUT_DIR + "logs/multiqc.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/multiqc.txt"
 	conda:
 		"envs/environment.yaml"
 	shell:
 		"echo 'MultiQC version:\n' > {log}; multiqc --version >> {log}; "
 		"multiqc {params.inputdir} -f -o {params.multiqcdir}"
+
+# The following rules are for the dowstream analyses of the workflow
+
+# The first downstream rule takes the dmrseq output and creates a bed file with all significant DMRs (specifically DMRs with q-values < 0.05)
 
 rule dm_regions_bed:
 	input:
@@ -936,6 +1155,22 @@ rule dm_regions_bed:
 		"Rscript scripts/significantGenesToBed.R {input.i1} {params.p1};"
 		"Rscript scripts/significantGenesToBed.R {input.i2} {params.p2}"
 
+# The first downstream rule for special mode: diploid vs diploid or polyploid vs polyploid. Read above for a short explanation of the rule.
+
+rule dm_regions_bed_special:
+	input:
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt"
+	output:
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.txt"
+	params:
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig"
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"Rscript scripts/significantGenesToBed.R {input} {params}"
+
+# The second downsteam rule checks the gene regions provided in the annotation file and finds any overlaps with DMRs. The output includes all genes showing an overlap with the overlapping DMR.
+
 rule bedtools_intersect:
 	input:
 		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_sig_sorted.bed",
@@ -951,6 +1186,23 @@ rule bedtools_intersect:
 	shell:
 		"bedtools intersect -a {params.anno1} -b {input.i1} -wo > {output.o1};"
 		"bedtools intersect -a {params.anno2} -b {input.i2} -wo > {output.o2}"
+
+# The second downstream rule for special mode: diploid vs diploid or polyploid vs polyploid. Read above for a short explanation of the rule.
+
+rule bedtools_intersect_special:
+	input:
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.txt"
+	output:
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_genes_overlap.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_genes_overlap.txt"
+	params:
+		anno1 = config["ANNOTATION_PARENT_1"],
+		anno2 = config["ANNOTATION_PARENT_2"]
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"bedtools intersect -a {params.anno1} -b {input} -wo > {output}" if (sum(samples.origin == "parent1") > 0) else ("bedtools intersect -a {params.anno2} -b {input} -wo > {output}" if (sum(samples.origin == "parent2") > 0) else "bedtools intersect -a {params.anno1} -b {input} -wo > {output}; bedtools intersect -a {params.anno2} -b {input} -wo >> {output}")
+
+# The third and final rule for downstream analyses. With overlap information and DMR information, we generate a summary file including gene ID of the genes overlapping with DMRs, all ranges for gene regions and DMRs and methylation status. Methylation status is based on the statistics given by the dmrseq output, taking condition 'A' as reference (i.e. increase means increase compared to condition 'A')
 
 rule dmr_genes:
 	input:
@@ -971,3 +1223,38 @@ rule dmr_genes:
 	shell:
 		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1};"
 		"Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {params.o2}"
+
+# The third downstream rules for special modes: diploid vs diploid (first below) or polyploid vs polyploid (second below). Read above for a short explanation of the rule.
+
+rule dmr_genes_special_diploid:
+	input:
+		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_genes_overlap.txt",
+		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt"
+	output:
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt"
+	params:
+		geneID1 = config["GENE_ID_PARENT_1"],
+		geneID2 = config["GENE_ID_PARENT_2"],
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}"
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1}" if (sum(samples.origin == "parent1") > 0) else "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o1}"
+
+rule dmr_genes_special_polyploid:
+	input:
+		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_genes_overlap.txt",
+		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt"
+	output:
+		first = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt",
+		second = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt"
+	params:
+		geneID1 = config["GENE_ID_PARENT_1"],
+		geneID2 = config["GENE_ID_PARENT_2"],
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}_1",
+		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}_2"
+	conda:
+		"envs/environment_downstream.yaml"
+	shell:
+		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1};"
+		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o2}"

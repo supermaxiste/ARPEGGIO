@@ -72,7 +72,5 @@ save(regions, file = outputR)
 
 #This took about 1.5 h
 regions_dataframe <- as.data.frame(regions)
-colnames(regions_dataframe) <- c("seqnames", "start", "end", "width", 
-                                 "strand", "L", "area", "beta", "stat", "pval", 
-                                 "qval", "index.start", "index.end", "index.width")
+
 write.csv(regions_dataframe, file=output, quote = FALSE, row.names = FALSE, col.names = TRUE)
