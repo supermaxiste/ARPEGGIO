@@ -17,7 +17,7 @@ rule quality_control:
 	benchmark:
 		OUTPUT_DIR + "benchmark/qc_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -38,7 +38,7 @@ rule quality_control_trimmed_SE:
 	benchmark:
 		OUTPUT_DIR + "benchmark/qc_trim_se_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -62,7 +62,7 @@ rule quality_control_trimmed_PE:
 	benchmark:
 		OUTPUT_DIR + "benchmark/qc_trim_pe_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -77,7 +77,7 @@ rule bam_sorting_p1:
 	output:
 		o1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"samtools sort {input.p1} > {output.o1}"
 
@@ -89,7 +89,7 @@ rule bam_sorting_p2:
 	output:
 		o2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted.bam")
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"samtools sort {input.p2} > {output.o2}"
 
@@ -103,7 +103,7 @@ rule bam_sorting_allo:
 		o3 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted_allo.bam")),
 		o4 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else (OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"))
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"samtools sort {input.allo1} > {output.o3};"
 		"samtools sort {input.allo2} > {output.o4}"
@@ -120,7 +120,7 @@ rule qualimap_p1:
 	params:
 		output = OUTPUT_DIR + "qualimap/{sample}_p1"
 	conda:
-		"envs/environment2.yaml"
+		"../envs/environment2.yaml"
 	shell:
 		"qualimap bamqc -bam {input} -outdir {params.output}"
 
@@ -136,7 +136,7 @@ rule qualimap_p2:
 	params:
 		output = OUTPUT_DIR + "qualimap/{sample}_p2"
 	conda:
-		"envs/environment2.yaml"
+		"../envs/environment2.yaml"
 	shell:
 		"qualimap bamqc -bam {input} -outdir {params.output}"
 
@@ -155,7 +155,7 @@ rule qualimap_allo_se:
 		output1 = OUTPUT_DIR + "qualimap/{sample}_allo_se_1/",
 		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_se_2/"
 	conda:
-		"envs/environment2.yaml"
+		"../envs/environment2.yaml"
 	shell:
 		"qualimap bamqc -bam {input.genome1} -outdir {params.output1};"
 		"qualimap bamqc -bam {input.genome2} -outdir {params.output2}"
@@ -175,7 +175,27 @@ rule qualimap_allo_pe:
 		output1 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/",
 		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/"
 	conda:
-		"envs/environment2.yaml"
+		"../envs/environment2.yaml"
 	shell:
 		"qualimap bamqc -bam {input.genome1} -outdir {params.output1};"
 		"qualimap bamqc -bam {input.genome2} -outdir {params.output2}"
+
+## Run MultiQC to combine all the outputs from QC, trimming and alignment in a single nice report
+
+rule multiqc:
+	input:
+		multiqc_input
+	output:
+		OUTPUT_DIR + "MultiQC/multiqc_report.html"
+	params:
+		inputdir = multiqc_params,
+		multiqcdir = OUTPUT_DIR + "MultiQC"
+	log:
+		OUTPUT_DIR + "logs/multiqc.log"
+	benchmark:
+		OUTPUT_DIR + "benchmark/multiqc.txt"
+	conda:
+		"../envs/environment.yaml"
+	shell:
+		"echo 'MultiQC version:\n' > {log}; multiqc --version >> {log}; "
+		"multiqc {params.inputdir} -f -o {params.multiqcdir}"

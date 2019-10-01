@@ -17,7 +17,7 @@ rule deduplication_SE_1:
 	benchmark:
 		OUTPUT_DIR + "benchmark/dedup_se1_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"deduplicate_bismark -s --output_dir {params} --bam {input}"
 
@@ -35,7 +35,7 @@ rule deduplication_SE_2:
 	benchmark:
 		OUTPUT_DIR + "benchmark/dedup_se2_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"deduplicate_bismark -s --output_dir {params} --bam {input}"
 
@@ -53,7 +53,7 @@ rule deduplication_PE_1:
 	benchmark:
 		OUTPUT_DIR + "benchmark/dedup_pe1_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"deduplicate_bismark -p --output_dir {params} --bam {input}"
 
@@ -71,6 +71,6 @@ rule deduplication_PE_2:
 	benchmark:
 		OUTPUT_DIR + "benchmark/dedup_pe2_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"deduplicate_bismark -p --output_dir {params} --bam {input}"

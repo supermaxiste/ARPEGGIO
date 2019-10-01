@@ -44,64 +44,7 @@ if config["DIPLOID_ONLY"]:
 	n_samples_A = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "A")])
 	n_samples_B = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "B")])
 
-# General rule to run all analyses depending on the config settings
-
-def dmr_input(wildcards):
-	input = []
-	if config["RUN_DOWNSTREAM"]:
-		if config["ONLY_CG_CONTEXT"]:
-			if config["POLYPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context"]))
-			elif config["DIPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context"]))
-			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
-		else:
-			if config["POLYPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			elif config["DIPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-	if config["RUN_DMR_ANALYSIS"]:
-		if config["ONLY_CG_CONTEXT"]:
-			if config["POLYPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context"]))
-			elif config["DIPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context"]))
-			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
-		else:
-			if config["POLYPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			elif config["DIPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-	return input
-
-## Run all analyses
-rule all:
-	input:
-		OUTPUT_DIR + "MultiQC/multiqc_report.html",
-		dmr_input
-
-######################### Main rules of ARPEGGIO #############################
-
-include: "rules/quality_check.smk"
-include: "rules/trimming.smk"
-include: "rules/alignment.smk"
-include: "rules/read_sorting.smk"
-include: "rules/deduplication.smk"
-include: "rules/methylation_extraction.smk"
-include: "rules/differential_methylation_analysis.smk"
-
+####################### Functions to define inputs ############################
 
 ## Define a function to create an input for MultiQC to include all the settings specified in the config file.
 
@@ -173,3 +116,169 @@ def multiqc_params(wildcards):
 		param.append(OUTPUT_DIR + "Bismark")
 		param.append(OUTPUT_DIR + "qualimap")
 	return param
+
+# General rule to run all analyses depending on the config settings
+
+def dmr_input(wildcards):
+	input = []
+	if config["RUN_DOWNSTREAM"]:
+		if config["ONLY_CG_CONTEXT"]:
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
+		else:
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+	if config["RUN_DMR_ANALYSIS"]:
+		if config["ONLY_CG_CONTEXT"]:
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
+		else:
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+	return input
+
+# Define a function to create an input for dmrseq_CG to include all the samples from the previous steps
+
+def dmrseq_CG_input_p1(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+	return input
+
+def dmrseq_CG_input_p2(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+	return input
+
+def dmrseq_CG_input_allo(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
+	return input
+
+# Define a function to create an input for dmrseq_CHG to include all the samples from the previous steps
+
+def dmrseq_CHG_input_p1(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+	return input
+
+def dmrseq_CHG_input_p2(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+	return input
+
+def dmrseq_CHG_input_allo(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
+	return input
+
+# Define a function to create an input for dmrseq_CHH to include all the samples from the previous steps
+
+def dmrseq_CHH_input_p1(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+	return input
+
+def dmrseq_CHH_input_p2(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+	return input
+
+def dmrseq_CHH_input_allo(wildcards):
+	input = []
+	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
+	return input
+
+
+def dmrseq_CG_special_input_A(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
+	return input
+
+def dmrseq_CG_special_input_B(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
+	return input
+
+
+def dmrseq_CHG_special_input_A(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
+	return input
+
+def dmrseq_CHG_special_input_B(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
+	return input
+
+
+def dmrseq_CHH_special_input_A(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
+	return input
+
+def dmrseq_CHH_special_input_B(wildcards):
+	input = []
+	if config["POLYPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
+	if config["DIPLOID_ONLY"]:
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
+		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
+	return input
+
+## Run all analyses
+rule all:
+	input:
+		OUTPUT_DIR + "MultiQC/multiqc_report.html",
+		dmr_input
+
+######################### Main rules of ARPEGGIO #############################
+
+include: "rules/quality_check.smk"
+include: "rules/trimming.smk"
+include: "rules/alignment.smk"
+include: "rules/read_sorting.smk"
+include: "rules/deduplication.smk"
+include: "rules/methylation_extraction.smk"
+include: "rules/differential_methylation_analysis.smk"

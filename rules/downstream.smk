@@ -17,7 +17,7 @@ rule dm_regions_bed:
 		p1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_sig",
 		p2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_sig"
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/significantGenesToBed.R {input.i1} {params.p1};"
 		"Rscript scripts/significantGenesToBed.R {input.i2} {params.p2}"
@@ -32,7 +32,7 @@ rule dm_regions_bed_special:
 	params:
 		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig"
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/significantGenesToBed.R {input} {params}"
 
@@ -49,7 +49,7 @@ rule bedtools_intersect:
 		anno1 = config["ANNOTATION_PARENT_1"],
 		anno2 = config["ANNOTATION_PARENT_2"]
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"bedtools intersect -a {params.anno1} -b {input.i1} -wo > {output.o1};"
 		"bedtools intersect -a {params.anno2} -b {input.i2} -wo > {output.o2}"
@@ -65,7 +65,7 @@ rule bedtools_intersect_special:
 		anno1 = config["ANNOTATION_PARENT_1"],
 		anno2 = config["ANNOTATION_PARENT_2"]
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"bedtools intersect -a {params.anno1} -b {input} -wo > {output}" if (sum(samples.origin == "parent1") > 0) else ("bedtools intersect -a {params.anno2} -b {input} -wo > {output}" if (sum(samples.origin == "parent2") > 0) else "bedtools intersect -a {params.anno1} -b {input} -wo > {output}; bedtools intersect -a {params.anno2} -b {input} -wo >> {output}")
 
@@ -86,7 +86,7 @@ rule dmr_genes:
 		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}",
 		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}"
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1};"
 		"Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {params.o2}"
@@ -104,7 +104,7 @@ rule dmr_genes_special_diploid:
 		geneID2 = config["GENE_ID_PARENT_2"],
 		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}"
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1}" if (sum(samples.origin == "parent1") > 0) else "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o1}"
 
@@ -121,7 +121,7 @@ rule dmr_genes_special_polyploid:
 		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}_1",
 		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}_2"
 	conda:
-		"envs/environment_downstream.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1};"
 		"Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o2}"

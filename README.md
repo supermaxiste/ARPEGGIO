@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/supermaxiste/ARPEGGIO.svg?token=auqzHDuyLxkuTyyxwdvA&branch=master)](https://travis-ci.com/supermaxiste/ARPEGGIO) \
 <img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48">
 
-## ARPEGgIO: Automated Reproducible Polyploid EpiGenomic Workflow
+## ARPEGgIO: Automated Reproducible Polyploid EpiGenomIc wOrkflow
 
 
 ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis (trimming, quality check and alignment), a read sorting tool specific for allopolyploids and the most comprehensive statistical tool for Differential Methylation (DM) analysis.
@@ -19,6 +19,10 @@ ARPEGGIO is based on Snakemake: a human readable, Python based language. Snakema
 ## What's new in ARPEGGIO?
 
 Besides the workflow itself (which is already quite a lot of new), ARPEGGIO includes an allopolyploid specific read-sorting algorithm that has been adapted to deal with BS-seq data: [EAGLE-RC](https://github.com/tony-kuo/eagle). Check out the paper ["Homeolog expression quantification methods for allopolyploids"](https://doi.org/10.1093/bib/bby121) by Kuo _et al._ for more details. Together with EAGLE-RC, there's also `dmrseq`: an R package for differential methylation analysis. This package has one of the most comprehensive approaches to deal with WGBS data problems: mainly statistical and computational. If you're curious check out ["Detection and accurate false discovery rate control of differentially methylated regions from whole genome bisulfite sequencing"](https://doi.org/10.1093/biostatistics/kxy007).
+
+## Workflow overview
+
+![WorkflowOverview](images/Workflow.svg)
 
 ## Installation
 

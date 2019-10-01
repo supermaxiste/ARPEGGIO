@@ -15,7 +15,7 @@ rule bismark_prepare_genome:
 	benchmark:
 		OUTPUT_DIR + "benchmark/prepare_genome.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"bismark_genome_preparation {input.genome1}; "
 		"bismark_genome_preparation {input.genome2}"
@@ -38,7 +38,7 @@ rule bismark_alignment_SE_1:
 	benchmark:
 		OUTPUT_DIR + "benchmark/bismark_se1_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -63,7 +63,7 @@ rule bismark_alignment_SE_2:
 	benchmark:
 		OUTPUT_DIR + "benchmark/bismark_se2_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -89,7 +89,7 @@ rule bismark_alignment_PE_1:
 	benchmark:
 		OUTPUT_DIR + "benchmark/bismark_pe1_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -115,7 +115,7 @@ rule bismark_alignment_PE_2:
 	benchmark:
 		OUTPUT_DIR + "benchmark/bismark_pe2_{sample}.txt"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:

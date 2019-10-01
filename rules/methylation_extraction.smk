@@ -17,7 +17,7 @@ rule methylation_extraction_SE_parent_1:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
 		genome = config["GENOME_PARENT_1"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -37,7 +37,7 @@ rule methylation_extraction_SE_parent_2:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/",
 		genome = config["GENOME_PARENT_2"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -56,7 +56,7 @@ rule methylation_extraction_SE_allo_1:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_se/" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/" ,
 		genome = config["GENOME_PARENT_1"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -75,7 +75,7 @@ rule methylation_extraction_SE_allo_2:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_se/" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
 		genome = config["GENOME_PARENT_2"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -95,7 +95,7 @@ rule methylation_extraction_PE_parent_1:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/",
 		genome = config["GENOME_PARENT_1"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -115,7 +115,7 @@ rule methylation_extraction_PE_parent_2:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/",
 		genome = config["GENOME_PARENT_2"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -135,7 +135,7 @@ rule methylation_extraction_PE_allo_1:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_1/",
 		genome = config["GENOME_PARENT_1"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -155,7 +155,7 @@ rule methylation_extraction_PE_allo_2:
 		output = OUTPUT_DIR + "Bismark/extraction/{sample}_2/",
 		genome = config["GENOME_PARENT_2"]
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	threads:
 		CORES
 	shell:
@@ -174,7 +174,7 @@ rule coverage2cytosine_1:
 		genome1 = config["GENOME_PARENT_1"],
 		filename1 = OUTPUT_DIR + "Bismark/extraction/{sample}_p1/{sample}"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"coverage2cytosine -CX --genome_folder {params.genome1} -o {params.filename1} {input.f1}"
 
@@ -191,7 +191,7 @@ rule coverage2cytosine_2:
 		genome2 = config["GENOME_PARENT_2"],
 		filename2 = OUTPUT_DIR + "Bismark/extraction/{sample}_p2/{sample}"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"coverage2cytosine -CX --genome_folder {params.genome2} -o {params.filename2} {input.f2}"
 
@@ -212,7 +212,7 @@ rule coverage2cytosine_allo:
 		filename1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}",
 		filename2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"""
 		coverage2cytosine -CX --genome_folder {params.genome1} -o {params.filename1} {input.f1}

@@ -17,7 +17,7 @@ rule context_separation_parent_1:
 		sample_name = "{sample}",
 		output = OUTPUT_DIR + "DMR_analysis/context_separation/parent1/"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name}"
 
@@ -34,7 +34,7 @@ rule context_separation_parent_2:
 		sample_name = "{sample}",
 		output = OUTPUT_DIR + "DMR_analysis/context_separation/parent2/"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name}"
 
@@ -60,27 +60,10 @@ rule context_separation_allo:
 		sample_name = "{sample}",
 		output = OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/"
 	conda:
-		"envs/environment.yaml"
+		"../envs/environment.yaml"
 	shell:
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name};"
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name}"
-
-# Define a function to create an input for dmrseq_CG to include all the samples from the previous steps
-
-def dmrseq_CG_input_p1(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-	return input
-
-def dmrseq_CG_input_p2(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
-	return input
-
-def dmrseq_CG_input_allo(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
-	return input
 
 # Run dmrseq for CG context
 
@@ -102,27 +85,10 @@ rule dmrseq_CG:
 	threads:
 		config["CORES_NUMBER"]
 	conda:
-		"envs/environment_R.yaml"
+		"../envs/environment_R.yaml"
 	shell:
 		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
 		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
-
-# Define a function to create an input for dmrseq_CHG to include all the samples from the previous steps
-
-def dmrseq_CHG_input_p1(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-	return input
-
-def dmrseq_CHG_input_p2(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
-	return input
-
-def dmrseq_CHG_input_allo(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
-	return input
 
 # Run dmrseq for CHG context
 
@@ -144,27 +110,10 @@ rule dmrseq_CHG:
 	threads:
 		config["CORES_NUMBER"]
 	conda:
-		"envs/environment_R.yaml"
+		"../envs/environment_R.yaml"
 	shell:
 		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
 		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
-
-# Define a function to create an input for dmrseq_CHH to include all the samples from the previous steps
-
-def dmrseq_CHH_input_p1(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-	return input
-
-def dmrseq_CHH_input_p2(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
-	return input
-
-def dmrseq_CHH_input_allo(wildcards):
-	input = []
-	input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[samples.origin == 'allopolyploid'].values.tolist()))
-	return input
 
 # Run dmrseq for CHH context
 
@@ -186,30 +135,13 @@ rule dmrseq_CHH:
 	threads:
 		config["CORES_NUMBER"]
 	conda:
-		"envs/environment_R.yaml"
+		"../envs/environment_R.yaml"
 	shell:
 		"Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo};"
 		"Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
 
 ## Rules for dmrseq comparing polyploids to polyploids or diploids to diploids based on conditions given in the metadata file
 
-def dmrseq_CG_special_input_A(wildcards):
-	input = []
-	if config["POLYPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
-	if config["DIPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
-	return input
-
-def dmrseq_CG_special_input_B(wildcards):
-	input = []
-	if config["POLYPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
-	if config["DIPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
-	return input
 
 rule dmrseq_CG_special:
 	input:
@@ -222,27 +154,9 @@ rule dmrseq_CG_special:
 	threads:
 		config["CORES_NUMBER"]
 	conda:
-		"envs/environment_R.yaml"
+		"../envs/environment_R.yaml"
 	shell:
 		"Rscript scripts/dmrseq.R {n_samples_B} {n_samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
-
-def dmrseq_CHG_special_input_A(wildcards):
-	input = []
-	if config["POLYPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
-	if config["DIPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
-	return input
-
-def dmrseq_CHG_special_input_B(wildcards):
-	input = []
-	if config["POLYPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
-	if config["DIPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHG.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
-	return input
 
 rule dmrseq_CHG_special:
 	input:
@@ -253,27 +167,9 @@ rule dmrseq_CHG_special:
 	threads:
 		config["CORES_NUMBER"]
 	conda:
-		"envs/environment_R.yaml"
+		"../envs/environment_R.yaml"
 	shell:
 		"Rscript scripts/dmrseq.R {n_samples_B} {n_samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
-
-def dmrseq_CHH_special_input_A(wildcards):
-	input = []
-	if config["POLYPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'A')].values.tolist()))
-	if config["DIPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'A')].values.tolist()))
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'A')].values.tolist()))
-	return input
-
-def dmrseq_CHH_special_input_B(wildcards):
-	input = []
-	if config["POLYPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'allopolyploid') & (samples.condition == 'B')].values.tolist()))
-	if config["DIPLOID_ONLY"]:
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent1/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent1') & (samples.condition == 'B')].values.tolist()))
-		input.extend(expand(OUTPUT_DIR + "DMR_analysis/context_separation/parent2/{sample}_CHH.cov", sample = samples.name[(samples.origin == 'parent2') & (samples.condition == 'B')].values.tolist()))
-	return input
 
 rule dmrseq_CHH_special:
 	input:
@@ -286,6 +182,6 @@ rule dmrseq_CHH_special:
 	threads:
 		config["CORES_NUMBER"]
 	conda:
-		"envs/environment_R.yaml"
+		"../envs/environment_R.yaml"
 	shell:
 		"Rscript scripts/dmrseq.R {n_samples_B} {n_samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
