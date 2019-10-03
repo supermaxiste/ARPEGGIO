@@ -17,7 +17,7 @@ rule context_separation_parent_1:
 		sample_name = "{sample}",
 		output = OUTPUT_DIR + "DMR_analysis/context_separation/parent1/"
 	conda:
-		"../envs/environment.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name}"
 
@@ -34,7 +34,7 @@ rule context_separation_parent_2:
 		sample_name = "{sample}",
 		output = OUTPUT_DIR + "DMR_analysis/context_separation/parent2/"
 	conda:
-		"../envs/environment.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name}"
 
@@ -60,7 +60,7 @@ rule context_separation_allo:
 		sample_name = "{sample}",
 		output = OUTPUT_DIR + "DMR_analysis/context_separation/allopolyploid/"
 	conda:
-		"../envs/environment.yaml"
+		"../envs/environment_downstream.yaml"
 	shell:
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name};"
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name}"
