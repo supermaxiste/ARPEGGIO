@@ -9,4 +9,4 @@ example/genomes/parent2/Bisulfite_Genome/
 
 # Ignore snakemake
 
-./snakemake/ 
+.snakemake/ 

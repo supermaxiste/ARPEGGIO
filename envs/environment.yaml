@@ -1,6 +1,5 @@
 channels:
   - bioconda
-  - r
   - conda-forge
 dependencies:
   - trim-galore
@@ -8,4 +7,3 @@ dependencies:
   - bismark
   - samtools
   - multiqc
-  - r-data.table

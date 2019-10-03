@@ -27,8 +27,8 @@ rule read_sorting_SE:
 
 rule read_sorting_PE:
 	input:
-		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam",
-		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam"
+		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam",
+		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam",
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam"

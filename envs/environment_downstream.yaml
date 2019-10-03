@@ -1,8 +1,11 @@
 channels:
   - bioconda
   - conda-forge
+  - r
 dependencies:
+  - r-base
   - r-data.table
   - bedtools
   - r-stringr
   - r-stringi
+  - libgfortran=3.0.0

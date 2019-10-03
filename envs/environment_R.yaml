@@ -2,5 +2,7 @@ channels:
   - defaults
   - bioconda
   - conda-forge
+  - r
 dependencies:
   - bioconductor-dmrseq
+  - r-base
