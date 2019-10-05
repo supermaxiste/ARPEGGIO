@@ -10,3 +10,7 @@ example/genomes/parent2/Bisulfite_Genome/
 # Ignore snakemake
 
 .snakemake/ 
+
+# Ignore eagle and htslib
+.eagle/
+.eagle-build/
