@@ -5,8 +5,11 @@
 
 ## Run EAGLE-RC to classify reads to the most probable genome for SE reads
 
+EAGLE = ".eagle/bin/eagle-rc"
+
 rule read_sorting_SE:
 	input:
+		eagle_bin = EAGLE,
 		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam",
 		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
 	output:
@@ -27,6 +30,7 @@ rule read_sorting_SE:
 
 rule read_sorting_PE:
 	input:
+		eagle_bin = EAGLE,
 		reads1 = OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam",
 		reads2 = OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam"
 	output:

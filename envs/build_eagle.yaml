@@ -1,0 +1,16 @@
+name: build_eagle
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - wget
+  - tar
+  - bzip2
+  - make
+  - autoconf
+  - zlib
+  - libcurl
+  - openssl
+  - backports.lzma
+  - gcc_linux-64
