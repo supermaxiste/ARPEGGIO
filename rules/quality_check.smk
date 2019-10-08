@@ -121,8 +121,10 @@ rule qualimap_p1:
 		output = OUTPUT_DIR + "qualimap/{sample}_p1"
 	conda:
 		"../envs/environment2.yaml"
+	threads:
+		CORES
 	shell:
-		"qualimap bamqc -bam {input} -outdir {params.output} --java-mem-size=4G"
+		"qualimap bamqc -bam {input} -outdir {params.output} -nt {CORES} --java-mem-size=4G"
 
 ## Qualimap rule to get statistics about bam files for parent2
 
@@ -137,8 +139,10 @@ rule qualimap_p2:
 		output = OUTPUT_DIR + "qualimap/{sample}_p2"
 	conda:
 		"../envs/environment2.yaml"
+	threads:
+		CORES
 	shell:
-		"qualimap bamqc -bam {input} -outdir {params.output} --java-mem-size=4G"
+		"qualimap bamqc -bam {input} -outdir {params.output} -nt {CORES} --java-mem-size=4G"
 
 ## Qualimap rule to get statistics about bam files for allopolyploid SE reads
 
@@ -156,9 +160,11 @@ rule qualimap_allo_se:
 		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_se_2/"
 	conda:
 		"../envs/environment2.yaml"
+	threads:
+		CORES
 	shell:
-		"qualimap bamqc -bam {input.genome1} -outdir {params.output1} --java-mem-size=4G;"
-		"qualimap bamqc -bam {input.genome2} -outdir {params.output2} --java-mem-size=4G"
+		"qualimap bamqc -bam {input.genome1} -outdir {params.output1} -nt {CORES} --java-mem-size=4G;"
+		"qualimap bamqc -bam {input.genome2} -outdir {params.output2} -nt {CORES} --java-mem-size=4G"
 
 ## Qualimap rule to get statistics about bam files for allopolyploid PE reads
 
@@ -176,9 +182,11 @@ rule qualimap_allo_pe:
 		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/"
 	conda:
 		"../envs/environment2.yaml"
+	threads:
+		CORES
 	shell:
-		"qualimap bamqc -bam {input.genome1} -outdir {params.output1} --java-mem-size=4G;"
-		"qualimap bamqc -bam {input.genome2} -outdir {params.output2} --java-mem-size=4G"
+		"qualimap bamqc -bam {input.genome1} -outdir {params.output1} -nt {CORES} --java-mem-size=4G;"
+		"qualimap bamqc -bam {input.genome2} -outdir {params.output2} -nt {CORES} --java-mem-size=4G"
 
 ## Run MultiQC to combine all the outputs from QC, trimming and alignment in a single nice report
 
