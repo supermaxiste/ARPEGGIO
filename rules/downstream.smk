@@ -28,7 +28,7 @@ rule dm_regions_bed_special:
 	input:
 		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.txt"
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.bed"
 	params:
 		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig"
 	conda:
@@ -58,7 +58,7 @@ rule bedtools_intersect:
 
 rule bedtools_intersect_special:
 	input:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.txt"
+		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.bed"
 	output:
 		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_genes_overlap.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_genes_overlap.txt"
 	params:
