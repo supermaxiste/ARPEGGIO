@@ -21,6 +21,7 @@ METADATA: example/metadata.txt
 ###############################################################################
 
 IS_PAIRED: True
+CONVERSION_CHECK: False
 RUN_TRIMMING: True
 RUN_BISMARK: True
 RUN_READ_SORTING: True
@@ -35,6 +36,14 @@ RUN_DOWNSTREAM: False
 
 POLYPLOID_ONLY: False
 DIPLOID_ONLY: False
+
+###############################################################################
+###############                 CONVERSION_CHECK                ###############
+###############################################################################
+
+# Path to folder containing the genome used as control for bisulfite conversion efficiency. For plants it's usually the chloroplast genome, while other organisms usually use the lambda genome.
+
+CONTROL_GENOME: /path/to/genome
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
