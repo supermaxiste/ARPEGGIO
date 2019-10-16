@@ -41,10 +41,9 @@ DIPLOID_ONLY: False
 ###############                 CONVERSION_CHECK                ###############
 ###############################################################################
 
-# Path to folder containing the genome used as control for bisulfite conversion efficiency. For plants it's usually the chloroplast genome, while other organisms usually use the lambda genome. Path to the assembly is also needed.
+# Path to folder containing the genome used as control for bisulfite conversion efficiency. For plants it's usually the chloroplast genome, while other organisms usually use the lambda genome.
 
-CONTROL_GENOME: /path/to/genome
-CONTROL_GENOME_ASSEMBLY: /path/to/genome/genome.fa
+CONTROL_GENOME: /path/to/genome/folder/
 
 ###############################################################################
 ###############                 QUALITY CONTROL                 ###############
