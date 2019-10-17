@@ -78,8 +78,8 @@ rule bismark_alignment_PE_1:
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam",
-		report = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt"
+		sample = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam",
+		report = OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_PE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/{sample}_1/",
 		genome1 = config["GENOME_PARENT_1"],
@@ -104,8 +104,8 @@ rule bismark_alignment_PE_2:
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam",
-		report = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt"
+		sample = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam",
+		report = OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_PE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Bismark/{sample}_2/",
 		genome2 = config["GENOME_PARENT_2"],
