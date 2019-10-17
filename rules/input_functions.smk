@@ -6,6 +6,21 @@
 
 def multiqc_input(wildcards):
 	input = []
+	if config["CONVERSION_CHECK"]:
+		if config["IS_PAIRED"]:
+			if config["RUN_TRIMMING"]:
+				## paired and trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+			else:
+				## paired and not trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+		else:
+			if config["RUN_TRIMMING"]:
+				## not paired and trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_trimmed_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
+			else:
+				## not paired and not trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
 	if config["IS_PAIRED"]:
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_1"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
@@ -81,6 +96,8 @@ def multiqc_input(wildcards):
 
 def multiqc_params(wildcards):
 	param = [OUTPUT_DIR + "FastQC"]
+	if config["CONVERSION_CHECK"]:
+		param.append(OUTPUT_DIR + "Conversion_efficiency")
 	if config["RUN_TRIMMING"]:
 		param.append(OUTPUT_DIR + "FASTQtrimmed")
 	if config["RUN_BISMARK"]:
