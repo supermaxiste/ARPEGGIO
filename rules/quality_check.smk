@@ -90,11 +90,12 @@ rule bismark_alignment_SE_control:
 		CONTROL_GENOME + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
 		fastq = OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_bismark_bt2.bam",
-		report = OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_bismark_bt2_SE_report.txt"
+		sample = OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_bismark_bt2.bam",
+		report = OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_bismark_bt2_SE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Conversion_efficiency/{sample}/",
 		control = CONTROL_GENOME
+		prefix = "cc"
 	log:
 		OUTPUT_DIR + "logs/Conversion_efficiency_{sample}.log"
 	benchmark:
@@ -105,7 +106,7 @@ rule bismark_alignment_SE_control:
 		CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.control} {input.fastq}"
+		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.control} {input.fastq}"
 
 rule bismark_alignment_PE_control:
 	input:
@@ -113,11 +114,12 @@ rule bismark_alignment_PE_control:
 		fastq1 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_1"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz",
 		fastq2 = OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2.fq.gz" if config["RUN_TRIMMING"] else RAW_DATA_DIR + "{sample}_" + str(config["PAIR_2"]) + "." + str(config["RAW_DATA_EXTENSION"]) + ".gz"
 	output:
-		sample = OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam",
-		report = OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_PE_report.txt"
+		sample = OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam",
+		report = OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_PE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Conversion_efficiency/{sample}/",
 		control = CONTROL_GENOME
+		prefix = "cc"
 	log:
 		OUTPUT_DIR + "logs/Conversion_efficiency_{sample}.log"
 	benchmark:
@@ -128,7 +130,7 @@ rule bismark_alignment_PE_control:
 		CORES
 	shell:
 		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
-		"bismark --multicore {BISMARK_CORES} --genome {params.control} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
+		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES} --genome {params.control} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 # sort bam files for multiqc (parent1)
 
