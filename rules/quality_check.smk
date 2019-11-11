@@ -94,7 +94,7 @@ rule bismark_alignment_SE_control:
 		report = OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_trimmed_bismark_bt2_SE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_bismark_bt2_SE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Conversion_efficiency/{sample}/",
-		control = CONTROL_GENOME
+		control = CONTROL_GENOME,
 		prefix = "cc"
 	log:
 		OUTPUT_DIR + "logs/Conversion_efficiency_{sample}.log"
@@ -118,7 +118,7 @@ rule bismark_alignment_PE_control:
 		report = OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_PE_report.txt" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Conversion_efficiency/{sample}/cc.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_PE_report.txt"
 	params:
 		output = OUTPUT_DIR + "Conversion_efficiency/{sample}/",
-		control = CONTROL_GENOME
+		control = CONTROL_GENOME,
 		prefix = "cc"
 	log:
 		OUTPUT_DIR + "logs/Conversion_efficiency_{sample}.log"
