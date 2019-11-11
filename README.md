@@ -22,7 +22,7 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 
 ## Workflow overview
 
-![WorkflowOverview](images/Workflow.svg)
+![WorkflowOverview](images/WorkflowV2.svg)
 
 ## Installation
 
