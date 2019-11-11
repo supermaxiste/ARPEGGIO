@@ -47,9 +47,9 @@ rule methylation_extraction_SE_parent_2:
 
 rule methylation_extraction_SE_allo_1:
 	input:
-		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_se_allo1_{sample}.txt"
 	params:
@@ -66,9 +66,9 @@ rule methylation_extraction_SE_allo_1:
 
 rule methylation_extraction_SE_allo_2:
 	input:
-		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_se_allo2_{sample}.txt"
 	params:
@@ -85,10 +85,10 @@ rule methylation_extraction_SE_allo_2:
 
 rule methylation_extraction_PE_parent_1:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_pe_p1_{sample}.txt"
 	params:
@@ -105,10 +105,10 @@ rule methylation_extraction_PE_parent_1:
 
 rule methylation_extraction_PE_parent_2:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_pe_p2_{sample}.txt"
 	params:
@@ -125,10 +125,10 @@ rule methylation_extraction_PE_parent_2:
 
 rule methylation_extraction_PE_allo_1:
 	input:
-		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	benchmark:
  		OUTPUT_DIR + "benchmark/extraction_pe_allo1_{sample}.txt"
 	params:
@@ -145,10 +145,10 @@ rule methylation_extraction_PE_allo_1:
 
 rule methylation_extraction_PE_allo_2:
 	input:
-		 OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam"
+		 OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
+		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_pe_allo2_{sample}.txt"
 	params:
@@ -199,8 +199,8 @@ rule coverage2cytosine_2:
 
 rule coverage2cytosine_allo:
 	input:
-		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz")),
-		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"))
+		f1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz",
+		f2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
 	output:
 		o1 = OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}.CX_report.txt",
 		o2 = OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}.CX_report.txt"

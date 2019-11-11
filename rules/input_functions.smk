@@ -6,11 +6,36 @@
 
 def multiqc_input(wildcards):
 	input = []
+	if config["CONVERSION_CHECK"]:
+		if config["IS_PAIRED"]:
+			if config["RUN_TRIMMING"]:
+				## paired and trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+			else:
+				## paired and not trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+		else:
+			if config["RUN_TRIMMING"]:
+				## not paired and trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_trimmed_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
+			else:
+				## not paired and not trimmed
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'SE'].values.tolist()))
 	if config["IS_PAIRED"]:
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_1"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_" + str(config["PAIR_2"]) + "_fastqc.zip", sample = samples.name[samples.type == 'PE'].values.tolist()))
+		if config["CONVERSION_CHECK"]:
+			if config["RUN_TRIMMING"]:
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+			else:
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
 	else:
 		input.extend(expand(OUTPUT_DIR + "FastQC/{sample}_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist()))
+		if config["CONVERSION_CHECK"]:
+			if config["RUN_TRIMMING"]:
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_trimmed_bismark_bt2.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
+			else:
+				input.extend(expand(OUTPUT_DIR + "Conversion_efficiency/{sample}/{sample}_bismark_bt2.bam", sample = samples.name[samples.type == 'PE'].values.tolist()))
 	if config["RUN_TRIMMING"]:
 		if config["IS_PAIRED"]:
 			input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_1"]) + "_val_1.fq.gz", sample = samples.name[samples.type == 'PE'].values.tolist()))
@@ -22,12 +47,22 @@ def multiqc_input(wildcards):
 			input.extend(expand(OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed_fastqc.zip", sample = samples.name[samples.type == 'SE'].values.tolist()))
 	if config["RUN_BISMARK"]:
 		if config["IS_PAIRED"]:
-			## alignment
-			input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
-			input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
-			## deduplication
-			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
-			input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_R1_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+			if config["RUN_TRIMMING"]:
+				## paired and trimmed
+				## alignment
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+				## deduplication
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+			else:
+				## paired and not trimmed
+				## alignment
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
+				## deduplication
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent2')].values.tolist()))
+				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam", sample = samples.name[(samples.type == 'PE') & (samples.origin != 'parent1')].values.tolist()))
 			## qualimap
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
 			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
@@ -42,11 +77,6 @@ def multiqc_input(wildcards):
 				## deduplication
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
-				## qualimap
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 			else:
 				## not paired, not trimmed
 				## alignment
@@ -55,17 +85,19 @@ def multiqc_input(wildcards):
 				## deduplication
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent2')].values.tolist()))
 				input.extend(expand(OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam", sample = samples.name[(samples.type == 'SE') & (samples.origin != 'parent1')].values.tolist()))
-				## qualimap
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
-				input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
+			## qualimap
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p1/qualimapReport.html", sample = samples.name[samples.origin == 'parent1'].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_p2/qualimapReport.html", sample = samples.name[samples.origin == 'parent2'].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
+			input.extend(expand(OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html", sample = samples.name[(samples.type == 'SE') & (samples.origin == 'allopolyploid')].values.tolist()))
 	return input
 
 ## Define a function to create parameter directories for multiqc based on the settings in the config file
 
 def multiqc_params(wildcards):
 	param = [OUTPUT_DIR + "FastQC"]
+	if config["CONVERSION_CHECK"]:
+		param.append(OUTPUT_DIR + "Conversion_efficiency")
 	if config["RUN_TRIMMING"]:
 		param.append(OUTPUT_DIR + "FASTQtrimmed")
 	if config["RUN_BISMARK"]:

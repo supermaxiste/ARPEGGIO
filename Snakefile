@@ -16,6 +16,7 @@ OUTPUT_DIR = os.path.normpath(config["OUTPUT"]) + "/"
 RAW_DATA_DIR = os.path.normpath(config["RAW_DATA"]) + "/"
 GENOME_1 = os.path.normpath(config["GENOME_PARENT_1"]) + "/"
 GENOME_2 = os.path.normpath(config["GENOME_PARENT_2"]) + "/"
+CONTROL_GENOME = os.path.normpath(config["CONTROL_GENOME"]) + "/"
 CORES = config["CORES_NUMBER"]
 BISMARK_CORES = round(config["CORES_NUMBER"]/3) if config["CORES_NUMBER"]>2 else 1
 
