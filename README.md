@@ -4,7 +4,7 @@
 ## ARPEGgIO: Automated Reproducible Polyploid EpiGenomIc wOrkflow
 
 
-ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis (trimming, quality check and alignment), a read sorting tool specific for allopolyploids and the most comprehensive statistical tool for Differential Methylation (DM) analysis.
+ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis (trimming, quality check and alignment), a read sorting tool specific for allopolyploids, the most comprehensive statistical tool for Differential Methylation (DM) analysis and a set of downstream analyses to obtain a list of genes showing differential methylation.
 
 ## Motivation
 
@@ -18,7 +18,7 @@ ARPEGGIO is based on Snakemake: a human readable, Python based language. Snakema
 
 ## What's new in ARPEGGIO?
 
-Besides the workflow itself (which is already quite a lot of new), ARPEGGIO includes an allopolyploid specific read-sorting algorithm that has been adapted to deal with BS-seq data: [EAGLE-RC](https://github.com/tony-kuo/eagle). Check out the paper ["Homeolog expression quantification methods for allopolyploids"](https://doi.org/10.1093/bib/bby121) by Kuo _et al._ for more details. Together with EAGLE-RC, there's also `dmrseq`: an R package for differential methylation analysis. This package has one of the most comprehensive approaches to deal with WGBS data problems: mainly statistical and computational. If you're curious check out ["Detection and accurate false discovery rate control of differentially methylated regions from whole genome bisulfite sequencing"](https://doi.org/10.1093/biostatistics/kxy007).
+Besides the workflow itself (which is already quite a lot of new), ARPEGGIO includes an allopolyploid specific read-sorting algorithm that has been adapted to deal with BS-seq data: [EAGLE-RC](https://github.com/tony-kuo/eagle). Check out the papers ["Homeolog expression quantification methods for allopolyploids"](https://doi.org/10.1093/bib/bby121) and ["EAGLE: Explicit Alternative Genome Likelihood Evaluator"](https://doi.org/10.1186/s12920-018-0342-1) by Kuo _et al._ for more details. Together with EAGLE-RC, there's also `dmrseq`: an R package for differential methylation analysis. This package has one of the most comprehensive approaches to deal with WGBS data problems: mainly statistical and computational. If you're curious check out ["Detection and accurate false discovery rate control of differentially methylated regions from whole genome bisulfite sequencing"](https://doi.org/10.1093/biostatistics/kxy007) by Korthauer _et al_.
 
 ## Workflow overview
 
@@ -26,7 +26,7 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 
 ## Installation
 
-To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) and [eagle](https://github.com/tony-kuo/eagle). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and run the workflow through conda.
+To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and run the workflow through conda.
 
 ```
 git clone https://github.com/supermaxiste/ARPEGGIO
