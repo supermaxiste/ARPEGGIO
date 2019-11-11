@@ -26,12 +26,12 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.73556432"
-     inkscape:cx="377.16766"
-     inkscape:cy="211.9733"
+     inkscape:zoom="0.63941145"
+     inkscape:cx="340.46545"
+     inkscape:cy="236.47542"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
-     showgrid="false"
+     inkscape:current-layer="layer2"
+     showgrid="true"
      inkscape:window-width="1280"
      inkscape:window-height="595"
      inkscape:window-x="1"
@@ -40,7 +40,11 @@
      inkscape:measure-start="0,0"
      inkscape:measure-end="0,0"
      inkscape:document-rotation="0"
-     showguides="false" />
+     showguides="false">
+    <inkscape:grid
+       id="grid474"
+       type="xygrid" />
+  </sodipodi:namedview>
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -84,23 +88,23 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="168.84296"
+       x="169.37212"
        y="48.941784"
        id="text5499"><tspan
          sodipodi:role="line"
          id="tspan5497"
-         x="168.84296"
+         x="169.37212"
          y="48.941784"
          style="font-size:4.23333px;stroke-width:0.264583">FastQC</tspan></text>
     <text
        id="text5503"
        y="97.095993"
-       x="168.84296"
+       x="169.37212"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        xml:space="preserve"><tspan
          style="font-size:4.23333px;stroke-width:0.264583"
          y="97.095993"
-         x="168.84296"
+         x="169.37212"
          id="tspan5501"
          sodipodi:role="line">FastQC</tspan></text>
     <text
@@ -132,12 +136,12 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.31765px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="165.83263"
+       x="166.89095"
        y="141.2012"
        id="text5517"><tspan
          sodipodi:role="line"
          id="tspan5515"
-         x="165.83263"
+         x="166.89095"
          y="141.2012"
          style="font-size:4.31765px;stroke-width:0.264583">Bismark</tspan></text>
     <path
@@ -148,12 +152,12 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="166.19716"
+       x="167.25548"
        y="193.93282"
        id="text5528"><tspan
          sodipodi:role="line"
          id="tspan5526"
-         x="166.19716"
+         x="167.25548"
          y="193.93282"
          style="font-size:4.23333px;stroke-width:0.264583">Bismark</tspan></text>
     <rect
@@ -202,23 +206,23 @@
     <text
        id="text5559"
        y="234.91948"
-       x="166.66028"
+       x="168.77692"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        xml:space="preserve"><tspan
          style="font-size:4.23333px;stroke-width:0.264583"
          y="234.91948"
-         x="166.66028"
+         x="168.77692"
          id="tspan5557"
          sodipodi:role="line">dmrseq</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       x="163.88153"
+       x="166.52733"
        y="284.01083"
        id="text5563"><tspan
          sodipodi:role="line"
          id="tspan5561"
-         x="163.88153"
+         x="166.52733"
          y="284.01083"
          style="font-size:4.23333px;stroke-width:0.264583">R scripts</tspan></text>
     <path
@@ -254,12 +258,12 @@
     <text
        id="text5517-6"
        y="39.370911"
-       x="167.80501"
+       x="167.27585"
        style="font-style:normal;font-weight:normal;font-size:4.31766px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        xml:space="preserve"><tspan
          style="font-size:4.31766px;stroke-width:0.264583"
          y="39.370911"
-         x="167.80501"
+         x="167.27585"
          id="tspan5515-3"
          sodipodi:role="line">Bismark</tspan></text>
     <path
@@ -1062,12 +1066,12 @@
     <text
        id="text5532"
        y="183.34962"
-       x="162.49304"
-       style="font-style:normal;font-weight:normal;font-size:10.58329999999999949px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="163.0222"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
        xml:space="preserve"><tspan
          style="font-size:4.23333px;stroke-width:0.264583"
          y="183.34962"
-         x="162.49304"
+         x="163.0222"
          id="tspan5530"
          sodipodi:role="line">EAGLE-RC</tspan></text>
     <path
