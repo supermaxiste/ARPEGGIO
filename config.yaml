@@ -15,12 +15,12 @@
 CORES_NUMBER: 1
 OUTPUT: output/
 METADATA: example/metadata.txt
+IS_PAIRED: True
 
 ###############################################################################
 ###############                CONDITIONAL RULES                ###############
 ###############################################################################
 
-IS_PAIRED: True
 CONVERSION_CHECK: False
 RUN_TRIMMING: True
 RUN_BISMARK: True

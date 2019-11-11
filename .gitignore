@@ -7,6 +7,11 @@ output/
 example/genomes/parent1/Bisulfite_Genome/
 example/genomes/parent2/Bisulfite_Genome/
 
+# Ignore indexed genomes
+
+example/genomes/parent1/*.fai
+example/genomes/parent2/*.fai
+
 # Ignore snakemake
 
 .snakemake/ 
