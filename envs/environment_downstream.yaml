@@ -1,7 +1,6 @@
 channels:
   - bioconda
   - conda-forge
-  - r
 dependencies:
   - r-base
   - r-data.table
