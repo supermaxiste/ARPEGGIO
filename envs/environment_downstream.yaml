@@ -1,10 +1,11 @@
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
+  - defaults
 dependencies:
-  - r-base
-  - r-data.table
-  - bedtools
-  - r-stringr
-  - r-stringi
+  - r-base=3.6.2
+  - r-data.table=1.12.8
+  - bedtools=2.29.1
+  - r-stringr=1.4.0
+  - r-stringi=1.4.3
   - libgfortran=3.0.0
