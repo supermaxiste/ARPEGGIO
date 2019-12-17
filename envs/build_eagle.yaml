@@ -2,13 +2,13 @@ name: build_eagle
 channels:
   - conda-forge
 dependencies:
-  - wget
-  - tar
-  - bzip2
-  - make
-  - autoconf
-  - zlib
-  - libcurl
-  - openssl
-  - backports.lzma
-  - gcc_linux-64
+  - wget=1.20.1
+  - tar=1.32
+  - bzip2=1.0.8
+  - make=4.2.1
+  - autoconf=2.69
+  - zlib=1.2.11
+  - libcurl=7.65.3
+  - openssl=1.1.1d
+  - backports.lzma=0.0.14
+  - gcc_linux-64=7.3.0

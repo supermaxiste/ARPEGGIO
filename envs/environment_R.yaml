@@ -1,6 +1,7 @@
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
+  - defaults
 dependencies:
-  - bioconductor-dmrseq
-  - r-base
+  - bioconductor-dmrseq=1.6.0
+  - r-base=3.6.2
