@@ -32,6 +32,10 @@ if config["DIPLOID_ONLY"]:
 	n_samples_A = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "A")])
 	n_samples_B = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "B")])
 
+####################### Docker setup ##########################################
+
+singularity: config["DOCKER_IMAGE"]
+
 ####################### Functions to define inputs ############################
 
 include: "rules/input_functions.smk"

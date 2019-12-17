@@ -14,8 +14,14 @@ example/genomes/parent2/*.fai
 
 # Ignore snakemake
 
-.snakemake/ 
+.snakemake/
 
 # Ignore eagle and htslib
 .eagle/
 .eagle-build/
+
+# Ignore docker generated files
+.conda/
+.empty/
+.java/
+.wget-hsts

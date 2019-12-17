@@ -29,9 +29,12 @@ EAGLE_BIN_INSTALL_PATH = os.path.join(INSTALL_PREFIX, "bin", "eagle-rc")
 # eagle decided to use the non standard name LFLAGS
 INCLUDES = os.path.join("$CONDA_PREFIX", "include")
 LIBS = os.path.join("$CONDA_PREFIX", "lib")
-COMPILER = "x86_64-conda_cos6-linux-gnu-cc"
+GCC_PREFIX = "x86_64-conda_cos6-linux-gnu-"
+CC = f"{GCC_PREFIX}cc"
+AR = f"{GCC_PREFIX}ar"
+RANLIB= f"{GCC_PREFIX}ranlib"
 HTSLIB_MK_FLAGS = f"LDFLAGS=-L{LIBS}"
-EAGLE_MK_FLAGS = f'CC={COMPILER} HTSDIR="{EAGLE_MK_HTSDIR}" PREFIX="{EAGLE_MK_PREFIX}" LFLAGS="-L{EAGLE_MK_HTSDIR} -L{LIBS}" LDLIBS="-lm -lz -llzma -lbz2 -lpthread -lcurl -lssl -lcrypto" MAKE="make {HTSLIB_MK_FLAGS}"'
+EAGLE_MK_FLAGS = f'CC={CC} AR={AR} RANLIB={RANLIB} HTSDIR="{EAGLE_MK_HTSDIR}" PREFIX="{EAGLE_MK_PREFIX}" LFLAGS="-L{EAGLE_MK_HTSDIR} -L{LIBS}" LDLIBS="-lm -lz -llzma -lbz2 -lpthread -lcurl -lssl -lcrypto" MAKE="make {HTSLIB_MK_FLAGS}"'
 EAGLE_MK_ENV = f'C_INCLUDE_PATH="{INCLUDES}" LIBRARY_PATH="{LIBS}"'
 
 rule download_eagle:

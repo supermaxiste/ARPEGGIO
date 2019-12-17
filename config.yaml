@@ -16,6 +16,7 @@ CORES_NUMBER: 1
 OUTPUT: output/
 METADATA: example/metadata.txt
 IS_PAIRED: True
+DOCKER_IMAGE: docker://continuumio/miniconda3:4.7.12
 
 ###############################################################################
 ###############                CONDITIONAL RULES                ###############
