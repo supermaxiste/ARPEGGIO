@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/supermaxiste/ARPEGGIO.svg?token=auqzHDuyLxkuTyyxwdvA&branch=master)](https://travis-ci.com/supermaxiste/ARPEGGIO) \
 <img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48">
 
-## ARPEGgIO: Automated Reproducible Polyploid EpiGenomIc wOrkflow
+## ARPEGgIO: Automated Reproducible Polyploid EpiGenetIc wOrkflow
 
 
 ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis (trimming, quality check and alignment), a read sorting tool specific for allopolyploids, the most comprehensive statistical tool for Differential Methylation (DM) analysis and a set of downstream analyses to obtain a list of genes showing differential methylation.
@@ -26,12 +26,12 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 
 ## Installation
 
-To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and run the workflow through conda.
+To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) and [Singularity](http://singularity.lbl.gov/). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and run the workflow through Conda and Docker:
 
 ```
 git clone https://github.com/supermaxiste/ARPEGGIO
 cd ARPEGGIO
-snakemake --use-conda
+snakemake --use-conda --use-singularity
 ```
 ## Setup and run
 
