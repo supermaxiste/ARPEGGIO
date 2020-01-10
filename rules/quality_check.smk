@@ -12,8 +12,6 @@ rule quality_control:
 		OUTPUT_DIR + "FastQC/{sample}_fastqc.zip"
 	params:
 		FastQC = OUTPUT_DIR + "FastQC"
-	log:
-		OUTPUT_DIR + "logs/fastqc_{sample}.log"
 	benchmark:
 		OUTPUT_DIR + "benchmark/qc_{sample}.txt"
 	conda:
@@ -21,7 +19,6 @@ rule quality_control:
 	threads:
 		CORES
 	shell:
-		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
 		" fastqc -o {params.FastQC} -t {threads} {input.fastq}"
 
 ## Run FastQC on SE trimmed reads resulting from trim_galore
@@ -33,8 +30,6 @@ rule quality_control_trimmed_SE:
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_trimmed_fastqc.zip"
 	params:
 		FastQC = OUTPUT_DIR + "FASTQtrimmed/"
-	log:
-		OUTPUT_DIR + "logs/fastqc_trimmed_{sample}.log"
 	benchmark:
 		OUTPUT_DIR + "benchmark/qc_trim_se_{sample}.txt"
 	conda:
@@ -42,7 +37,6 @@ rule quality_control_trimmed_SE:
 	threads:
 		CORES
 	shell:
-		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
 		"fastqc -o {params.FastQC} -t {threads} {input.fastq}"
 
 
@@ -57,8 +51,6 @@ rule quality_control_trimmed_PE:
 		OUTPUT_DIR + "FASTQtrimmed/{sample}_" + str(config["PAIR_2"]) + "_val_2_fastqc.zip"
 	params:
 		FastQC = OUTPUT_DIR + "FASTQtrimmed/"
-	log:
-		OUTPUT_DIR + "logs/fastqc_trimmed_{sample}.log"
 	benchmark:
 		OUTPUT_DIR + "benchmark/qc_trim_pe_{sample}.txt"
 	conda:
@@ -66,7 +58,6 @@ rule quality_control_trimmed_PE:
 	threads:
 		CORES
 	shell:
-		"echo 'FastQC version:\n' > {log}; fastqc --version >> {log}; "
 		"fastqc -o {params.FastQC} -t {threads} {input}"
 
 ## Run Bismark to prepare synthetic bisulfite converted control genome to check conversion efficiency
@@ -96,8 +87,6 @@ rule bismark_alignment_SE_control:
 		output = OUTPUT_DIR + "Conversion_efficiency/{sample}/",
 		control = CONTROL_GENOME,
 		prefix = "cc"
-	log:
-		OUTPUT_DIR + "logs/Conversion_efficiency_{sample}.log"
 	benchmark:
 		OUTPUT_DIR + "benchmark/Conversion_efficiency_{sample}.txt"
 	conda:
@@ -105,7 +94,6 @@ rule bismark_alignment_SE_control:
 	threads:
 		CORES
 	shell:
-		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
 		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES}  -o {params.output} --temp_dir {params.output} --genome {params.control} {input.fastq}"
 
 rule bismark_alignment_PE_control:
@@ -120,8 +108,6 @@ rule bismark_alignment_PE_control:
 		output = OUTPUT_DIR + "Conversion_efficiency/{sample}/",
 		control = CONTROL_GENOME,
 		prefix = "cc"
-	log:
-		OUTPUT_DIR + "logs/Conversion_efficiency_{sample}.log"
 	benchmark:
 		OUTPUT_DIR + "benchmark/Conversion_efficiency_{sample}.txt"
 	conda:
@@ -129,7 +115,6 @@ rule bismark_alignment_PE_control:
 	threads:
 		CORES
 	shell:
-		"echo 'Bismark version:\n' > {log}; bismark --version >> {log}; "
 		"bismark --prefix {params.prefix} --multicore {BISMARK_CORES} --genome {params.control} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output}"
 
 # sort bam files for multiqc (parent1)
@@ -160,16 +145,13 @@ rule bam_sorting_p2:
 
 rule bam_sorting_allo:
 	input:
-		allo1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam",
-		allo2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified{one_or_two}.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam" if config["IS_PAIRED"] else OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified{one_or_two}.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		o3 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated_sorted_allo.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted_allo.bam",
-		o4 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated_sorted_allo.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"
+		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified{one_or_two}_sorted.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated_sorted_allo.bam" if config["IS_PAIRED"] else OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified{one_or_two}_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_trimmed_bismark_bt2.deduplicated_sorted_allo.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"
 	conda:
 		"../envs/environment.yaml"
 	shell:
-		"samtools sort {input.allo1} > {output.o3};"
-		"samtools sort {input.allo2} > {output.o4}"
+		"samtools sort {input} > {output}"
 
 ## Qualimap rule to get statistics about bam files for parent1
 
@@ -211,45 +193,37 @@ rule qualimap_p2:
 
 rule qualimap_allo_se:
 	input:
-		genome1 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated_sorted_allo.bam",
-		genome2 = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"
+		genome = OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified{one_or_two}_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_trimmed_bismark_bt2.deduplicated_sorted_allo.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_bismark_bt2.deduplicated_sorted_allo.bam"
 	output:
-		OUTPUT_DIR + "qualimap/{sample}_allo_se_1/qualimapReport.html",
-		OUTPUT_DIR + "qualimap/{sample}_allo_se_2/qualimapReport.html"
+		OUTPUT_DIR + "qualimap/{sample}_allo_se_{one_or_two}/qualimapReport.html"
 	benchmark:
-		OUTPUT_DIR + "benchmark/qualimap_allo_se_{sample}.txt"
+		OUTPUT_DIR + "benchmark/qualimap_allo_se_{sample}_{one_or_two}.txt"
 	params:
-		output1 = OUTPUT_DIR + "qualimap/{sample}_allo_se_1/",
-		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_se_2/"
+		output = OUTPUT_DIR + "qualimap/{sample}_allo_se_{one_or_two}/"
 	conda:
 		"../envs/environment2.yaml"
 	threads:
 		CORES
 	shell:
-		"qualimap bamqc -bam {input.genome1} -outdir {params.output1} -nt {CORES} --java-mem-size=4G;"
-		"qualimap bamqc -bam {input.genome2} -outdir {params.output2} -nt {CORES} --java-mem-size=4G"
+		"qualimap bamqc -bam {input.genome} -outdir {params.output} -nt {CORES} --java-mem-size=4G"
 
 ## Qualimap rule to get statistics about bam files for allopolyploid PE reads
 
 rule qualimap_allo_pe:
 	input:
-		genome1 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam",
-		genome2 = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
+		genome = OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified{one_or_two}_sorted.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/qualimapReport.html",
-		OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/qualimapReport.html"
+		OUTPUT_DIR + "qualimap/{sample}_allo_pe_{one_or_two}/qualimapReport.html"
 	benchmark:
-		OUTPUT_DIR + "benchmark/qualimap_allo_pe_{sample}.txt"
+		OUTPUT_DIR + "benchmark/qualimap_allo_pe_{sample}_{one_or_two}.txt"
 	params:
-		output1 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_1/",
-		output2 = OUTPUT_DIR + "qualimap/{sample}_allo_pe_2/"
+		output = OUTPUT_DIR + "qualimap/{sample}_allo_pe_{one_or_two}/"
 	conda:
 		"../envs/environment2.yaml"
 	threads:
 		CORES
 	shell:
-		"qualimap bamqc -bam {input.genome1} -outdir {params.output1} -nt {CORES} --java-mem-size=4G;"
-		"qualimap bamqc -bam {input.genome2} -outdir {params.output2} -nt {CORES} --java-mem-size=4G"
+		"qualimap bamqc -bam {input.genome} -outdir {params.output} -nt {CORES} --java-mem-size=4G"
 
 ## Run MultiQC to combine all the outputs from QC, trimming and alignment in a single nice report
 
@@ -261,12 +235,9 @@ rule multiqc:
 	params:
 		inputdir = multiqc_params,
 		multiqcdir = OUTPUT_DIR + "MultiQC"
-	log:
-		OUTPUT_DIR + "logs/multiqc.log"
 	benchmark:
 		OUTPUT_DIR + "benchmark/multiqc.txt"
 	conda:
 		"../envs/environment.yaml"
 	shell:
-		"echo 'MultiQC version:\n' > {log}; multiqc --version >> {log}; "
 		"multiqc {params.inputdir} -f -o {params.multiqcdir}"
