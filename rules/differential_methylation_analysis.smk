@@ -62,7 +62,6 @@ rule context_separation_allo:
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
-		"Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name};"
 		"Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name}"
 
 # Run dmrseq for CG context for parent1 subgenome
