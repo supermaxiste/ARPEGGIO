@@ -5,71 +5,32 @@
 
 ## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_1)
 
-rule deduplication_SE_1:
+rule deduplication_SE:
 	input:
-		OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_bismark_bt2.bam"
+		OUTPUT_DIR + "Bismark/{sample}_{one_or_two}/{one_or_two}.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_{one_or_two}/{one_or_two}.{sample}_bismark_bt2.bam"
 	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_bismark_bt2.deduplicated.bam"
 	params:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
-	log:
-		OUTPUT_DIR + "logs/bismark_{sample}.log"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/"
 	benchmark:
-		OUTPUT_DIR + "benchmark/dedup_se1_{sample}.txt"
+		OUTPUT_DIR + "benchmark/dedup_se{one_or_two}_{sample}.txt"
 	conda:
 		"../envs/environment.yaml"
 	shell:
 		"deduplicate_bismark -s --output_dir {params} --bam {input}"
 
-## Run deduplication of the alignments to remove duplicated reads for SE reads (GENOME_PARENT_2)
-
-rule deduplication_SE_2:
-	input:
-		OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_trimmed_bismark_bt2.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_bismark_bt2.bam"
-	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
-	params:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
-	log:
-		OUTPUT_DIR + "logs/bismark_{sample}.log"
-	benchmark:
-		OUTPUT_DIR + "benchmark/dedup_se2_{sample}.txt"
-	conda:
-		"../envs/environment.yaml"
-	shell:
-		"deduplicate_bismark -s --output_dir {params} --bam {input}"
 
 ## Run deduplication of the alignments to remove duplicated reads for PE reads (GENOME_PARENT_1)
 
-rule deduplication_PE_1:
+rule deduplication_PE:
 	input:
-		OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam"
+		OUTPUT_DIR + "Bismark/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam"
 	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/{one_or_two}.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	params:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/"
-	log:
-		OUTPUT_DIR + "logs/bismark_{sample}.log"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_{one_or_two}/"
 	benchmark:
-		OUTPUT_DIR + "benchmark/dedup_pe1_{sample}.txt"
-	conda:
-		"../envs/environment.yaml"
-	shell:
-		"deduplicate_bismark -p --output_dir {params} --bam {input}"
-
-## Run deduplication of the alignments to remove duplicated reads for PE reads (GENOME_PARENT_2)
-
-rule deduplication_PE_2:
-	input:
-		OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.bam"
-	output:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
-	params:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/"
-	log:
-		OUTPUT_DIR + "logs/bismark_{sample}.log"
-	benchmark:
-		OUTPUT_DIR + "benchmark/dedup_pe2_{sample}.txt"
+		OUTPUT_DIR + "benchmark/dedup_pe{one_or_two}_{sample}.txt"
 	conda:
 		"../envs/environment.yaml"
 	shell:
