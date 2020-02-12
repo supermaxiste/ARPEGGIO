@@ -8,3 +8,4 @@ dependencies:
   - bismark=0.22.3
   - samtools=1.10
   - multiqc=1.8
+  - pigz=2.3.4
