@@ -79,7 +79,7 @@ rule dmrseq_CG_1:
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -100,7 +100,7 @@ rule dmrseq_CG_2:
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -121,7 +121,7 @@ rule dmrseq_CHG_1:
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -142,7 +142,7 @@ rule dmrseq_CHG_2:
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -163,7 +163,7 @@ rule dmrseq_CHH_1:
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -184,7 +184,7 @@ rule dmrseq_CHH_2:
 		n_samples_allo = n_samples_allo,
 		script = "scripts/dmrseq.R"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -202,7 +202,7 @@ rule dmrseq_CG_special:
 	benchmark:
 		OUTPUT_DIR + "benchmark/dmrseq_CG_special.txt"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -215,7 +215,7 @@ rule dmrseq_CHG_special:
 	output:
 		comparison = OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/CHG_context/A_v_B_polyploid.txt"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
@@ -230,7 +230,7 @@ rule dmrseq_CHH_special:
 	benchmark:
 		OUTPUT_DIR + "benchmark/dmrseq_CHG_special.txt"
 	threads:
-		config["CORES_NUMBER"]
+		CORES
 	conda:
 		"../envs/environment_R.yaml"
 	shell:
