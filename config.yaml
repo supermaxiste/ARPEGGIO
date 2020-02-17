@@ -12,7 +12,6 @@
 ###############                GENERAL PARAMETERS                ###############
 ###############################################################################
 
-CORES_NUMBER: 1
 OUTPUT: output/
 METADATA: example/metadata.txt
 IS_PAIRED: True

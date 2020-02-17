@@ -18,9 +18,9 @@ RAW_DATA_DIR = os.path.normpath(config["RAW_DATA"]) + "/"
 GENOME_1 = os.path.normpath(config["GENOME_PARENT_1"]) + "/"
 GENOME_2 = os.path.normpath(config["GENOME_PARENT_2"]) + "/"
 CONTROL_GENOME = os.path.normpath(config["CONTROL_GENOME"]) + "/"
-CORES = config["CORES_NUMBER"]
-BISMARK_CORES = max(math.trunc(config["CORES_NUMBER"]/3), 1)
-TRIM_CORES = max(math.trunc(config["CORES_NUMBER"]/6 - 1), 1) if config["IS_PAIRED"] else max(math.trunc(config["CORES_NUMBER"]/3 - 1), 1)
+CORES = workflow.cores
+BISMARK_CORES = max(math.trunc(CORES/3), 1)
+TRIM_CORES = max(math.trunc(CORES/6 - 1), 1) if config["IS_PAIRED"] else max(math.trunc(CORES/3 - 1), 1)
 
 # Count number of samples for parental species and allopolyploid
 

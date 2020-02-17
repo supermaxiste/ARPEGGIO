@@ -81,8 +81,10 @@ rule build_eagle:
         eagle_bin = EAGLE_BIN_PATH
     conda:
         ENV_PATH
+    threads:
+        CORES
     shell:
-        "{EAGLE_MK_ENV} make -C {EAGLE_DIR_PATH} {EAGLE_MK_FLAGS}"
+        "{EAGLE_MK_ENV} make -j {threads} -C {EAGLE_DIR_PATH} {EAGLE_MK_FLAGS}"
 
 rule install_eagle:
     input:
