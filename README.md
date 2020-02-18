@@ -1,20 +1,21 @@
 [![Build Status](https://travis-ci.com/supermaxiste/ARPEGGIO.svg?token=auqzHDuyLxkuTyyxwdvA&branch=master)](https://travis-ci.com/supermaxiste/ARPEGGIO) \
 <img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48"><img src="images/harp.png" height="48">
 
-## ARPEGgIO: Automated Reproducible Polyploid EpiGenetIc wOrkflow
+## ARPEGGIO: Automated Reproducible Polyploid EpiGenetic GuIdance wOrkflow
 
+<img align="left" width="150" height="150" src="images/sticker_try5">
 
 ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis (trimming, quality check and alignment), a read sorting tool specific for allopolyploids, the most comprehensive statistical tool for Differential Methylation (DM) analysis and a set of downstream analyses to obtain a list of genes showing differential methylation.
 
 ## Motivation
 
-In the last decade, the use of Next-Generation Sequencing technologies has become widespread across life sciences. With technology not being a bottleneck anymore, the new challenge with NGS data has shifted towards data analysis.
-To process and analyze WGBS data, many tools exist, but most of them were developed and/or tested with a focus on model species. For non-model species, especially polyploids, there are complexities that are often not taken into account and workflows are almost non-existent.
-To fill in this gap we developed ARPEGGIO: an automated and reproducible workflow for polyploid species.
+In the last decade, the use of High-Throughput Sequencing (HTS) technologies has become widespread across life sciences. With technology not being a bottleneck anymore, the new challenge with HTS data has shifted towards data analysis.
+To process and analyze WGBS data, many tools exist, but most of them were developed and/or tested with a focus on diploid model species. For polyploid species there are some complexities that are often not taken into account. One example is the large amount of duplicated genes in polyploids (homeologous genes) which might be challenging at the mapping step and influence downstream analyses.
+To help with the analysis of polyploid WGBS data we developed ARPEGGIO: an automated and reproducible workflow which aims at being easy to set up and use.
 
 ## Why ARPEGGIO?
 
-ARPEGGIO is based on Snakemake: a human readable, Python based language. Snakemake tries to offer the best trade-off between expert and less-experienced users. At its heart, Snakemake aims at being easily interpretable and adaptable to create workflows that are simple to re-run with new data. ARPEGGIO follows this philosophy and provides a workflow that is easy to adapt for all WGBS coming from allopolyploids.
+ARPEGGIO is easily setup with one configuration file and once ready, it will automatically analyse your WGBS data to provide a list of differentially methylated regions (DMRs). Thanks to Snakemake, a human readable, Python based language for workflows and Conda, a widely-used package manager, ARPEGGIO takes care of installing all the software needed fo the analyses and running all the steps in the workflow in the correct order. ARPEGGIO also ensures reproducibility of your analysis, you only need to share your configuration and your initial raw data.
 
 ## What's new in ARPEGGIO?
 
@@ -22,20 +23,29 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 
 ## Workflow overview
 
-![WorkflowOverview](images/WorkflowV2.png)
+![WorkflowOverview](images/WorkflowV3.png)
 
 ## Installation
 
-To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) and [Singularity](http://singularity.lbl.gov/). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and run the workflow through Conda and Docker:
+To install this workflow you first need to [install Snakemake via Conda](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). To further ensure reproducibility you can also install [Singularity](http://singularity.lbl.gov/). Once everything is set up, run the following commands to clone the ARPEGGIO repository to your computer and run the workflow. With Conda only:
+
+```
+git clone https://github.com/supermaxiste/ARPEGGIO
+cd ARPEGGIO
+snakemake --use-conda
+```
+
+With Conda and Singularity:
 
 ```
 git clone https://github.com/supermaxiste/ARPEGGIO
 cd ARPEGGIO
 snakemake --use-conda --use-singularity
 ```
+
 ## Setup and run
 
-Check out the [Wiki](https://github.com/supermaxiste/ARPEGGIO/wiki) to set up and run ARPEGGIO. The Wiki includes also a map of the output with explanations about the content of each folder.
+Check out the [Wiki](https://github.com/supermaxiste/ARPEGGIO/wiki) to set up and run ARPEGGIO. If you're in a hurry you can also find a Quick Setup section. The Wiki will help you better understand the workflow design, input, output and summary files.
 
 ## Troubleshooting and support
 
