@@ -3,7 +3,7 @@
 
 ## ARPEGGIO: Automated Reproducible Polyploid EpiGenetic GuIdance wOrkflow
 
-<img align="right" width="150" height="150" src="images/sticker_try5.png">
+<img align="right" width="150" height="177" src="images/sticker_try5.png">
 
 ARPEGGIO is a snakemake workflow that analyzes whole genome bisulfite sequencing (WGBS) data coming from (allo)polyploid species. The workflow includes all basic steps in WGBS data analysis (trimming, quality check and alignment), a read sorting tool specific for allopolyploids, the most comprehensive statistical tool for Differential Methylation (DM) analysis and a set of downstream analyses to obtain a list of genes showing differential methylation.
 
@@ -24,7 +24,7 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 ## Workflow overview
 
 <p align="center">
-  <img width="300" height="600" src="images/WorkflowV3.png">
+  <img width="300" height="494" src="images/WorkflowV3.png">
 </p>
 
 ## Installation
