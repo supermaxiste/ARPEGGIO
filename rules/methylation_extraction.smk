@@ -21,7 +21,7 @@ rule methylation_extraction_SE_parent_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 
 ## Run Bismark methylation extraction on SE bam files for parent species 2
@@ -41,7 +41,7 @@ rule methylation_extraction_SE_parent_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -60,7 +60,7 @@ rule methylation_extraction_SE_allo_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -79,7 +79,7 @@ rule methylation_extraction_SE_allo_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 1
 
@@ -99,7 +99,7 @@ rule methylation_extraction_PE_parent_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 2
 
@@ -119,7 +119,7 @@ rule methylation_extraction_PE_parent_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -139,7 +139,7 @@ rule methylation_extraction_PE_allo_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -159,7 +159,7 @@ rule methylation_extraction_PE_allo_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (parent 1)
 

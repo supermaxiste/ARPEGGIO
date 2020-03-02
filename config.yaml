@@ -92,6 +92,10 @@ CLIP_3_R2: 1
 GENOME_PARENT_1: example/genomes/parent1/
 GENOME_PARENT_2: example/genomes/parent2/
 
+# The following parameter is important for methylation extraction: if at least one assembly has thousands of scaffold set to it to True to avoid problems
+
+UNFINISHED_GENOME: False
+
 ###############################################################################
 ##############                    READ SORTING                    ##############
 ###############################################################################
