@@ -8,9 +8,12 @@
 
 rule methylation_extraction_SE_parent_1:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CpG_context_1.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CpG_context_1.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHG_context_1.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHG_context_1.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHH_context_1.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHH_context_1.{sample}_bismark_bt2.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_se_p1_{sample}.txt"
 	params:
@@ -21,16 +24,19 @@ rule methylation_extraction_SE_parent_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 
 ## Run Bismark methylation extraction on SE bam files for parent species 2
 
 rule methylation_extraction_SE_parent_2:
 	input:
-		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/{sample}_bismark_bt2.deduplicated.bam"
+		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CpG_context_2.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHG_context_2.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHG_context_2.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CpG_context_2.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHH_context_2.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHH_context_2.{sample}_bismark_bt2.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_se_p2_{sample}.txt"
 	params:
@@ -41,7 +47,7 @@ rule methylation_extraction_SE_parent_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -49,7 +55,10 @@ rule methylation_extraction_SE_allo_1:
 	input:
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_bismark_bt2.deduplicated.bismark.cov.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CpG_context_{sample}_classified1.ref.txt") if config["RUN_READ_SORTING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CpG_context_1.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CpG_context_1.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHG_context_{sample}_classified1.ref.txt") if config["RUN_READ_SORTING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHG_context_1.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHG_context_1.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHH_context_{sample}_classified1.ref.txt") if config["RUN_READ_SORTING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHH_context_1.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHH_context_1.{sample}_bismark_bt2.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_se_allo1_{sample}.txt"
 	params:
@@ -60,7 +69,7 @@ rule methylation_extraction_SE_allo_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on SE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -68,7 +77,10 @@ rule methylation_extraction_SE_allo_2:
 	input:
 		OUTPUT_DIR + "read_sorting/{sample}_se/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bam"
 	output:
-		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_se/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_bismark_bt2.deduplicated.bismark.cov.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CpG_context_{sample}_classified2.ref.txt") if config["RUN_READ_SORTING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CpG_context_2.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CpG_context_2.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHG_context_{sample}_classified2.ref.txt") if config["RUN_READ_SORTING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHG_context_2.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHG_context_2.{sample}_bismark_bt2.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHH_context_{sample}_classified2.ref.txt") if config["RUN_READ_SORTING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHH_context_2.{sample}_trimmed_bismark_bt2.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_se/CHH_context_2.{sample}_bismark_bt2.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_se_allo2_{sample}.txt"
 	params:
@@ -79,7 +91,7 @@ rule methylation_extraction_SE_allo_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -s -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 1
 
@@ -88,7 +100,10 @@ rule methylation_extraction_PE_parent_1:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CpG_context_1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CpG_context_1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHG_context_1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHG_context_1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHH_context_1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p1/CHH_context_1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_pe_p1_{sample}.txt"
 	params:
@@ -99,7 +114,7 @@ rule methylation_extraction_PE_parent_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for parent species 2
 
@@ -108,7 +123,10 @@ rule methylation_extraction_PE_parent_2:
 		OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_p2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CpG_context_2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CpG_context_2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHG_context_2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHG_context_2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHH_context_2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_p2/CHH_context_2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_pe_p2_{sample}.txt"
 	params:
@@ -119,7 +137,7 @@ rule methylation_extraction_PE_parent_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_1)
 
@@ -128,7 +146,10 @@ rule methylation_extraction_PE_allo_1:
 		OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified1.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_1/{sample}_classified1.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_1/1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CpG_context_{sample}_classified1.ref.txt") if config["IS_PAIRED"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CpG_context_1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CpG_context_1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CHG_context_{sample}_classified1.ref.txt") if config["IS_PAIRED"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CHG_context_1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CHG_context_1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CHH_context_{sample}_classified1.ref.txt") if config["IS_PAIRED"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CHH_context_1.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_1/CHH_context_1.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt")
 	benchmark:
  		OUTPUT_DIR + "benchmark/extraction_pe_allo1_{sample}.txt"
 	params:
@@ -139,7 +160,7 @@ rule methylation_extraction_PE_allo_1:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark methylation extraction on PE bam files for allopolyploid species (GENOME_PARENT_2)
 
@@ -148,7 +169,10 @@ rule methylation_extraction_PE_allo_2:
 		 OUTPUT_DIR + "read_sorting/{sample}/{sample}_classified2.ref.bam" if config["RUN_READ_SORTING"] and config["IS_PAIRED"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/deduplication/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bam"
 	output:
 		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bismark.cov.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bismark.cov.gz",
-		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz"
+		OUTPUT_DIR + "Bismark/extraction/{sample}_2/{sample}_classified2.ref.bedGraph.gz" if config["RUN_READ_SORTING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.bedGraph.gz" if config["RUN_TRIMMING"] else OUTPUT_DIR + "Bismark/extraction/{sample}_2/2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.bedGraph.gz",
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CpG_context_{sample}_classified2.ref.txt") if config["IS_PAIRED"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CpG_context_2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CpG_context_2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CHG_context_{sample}_classified2.ref.txt") if config["IS_PAIRED"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CHG_context_2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CHG_context_2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt"),
+		temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CHH_context_{sample}_classified2.ref.txt") if config["IS_PAIRED"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CHH_context_2.{sample}_" + str(config["PAIR_1"]) + "_val_1_bismark_bt2_pe.deduplicated.txt") if config["RUN_TRIMMING"] else temp(OUTPUT_DIR + "Bismark/extraction/{sample}_2/CHH_context_2.{sample}_" + str(config["PAIR_1"]) + "_bismark_bt2_pe.deduplicated.txt")
 	benchmark:
 		OUTPUT_DIR + "benchmark/extraction_pe_allo2_{sample}.txt"
 	params:
@@ -159,7 +183,7 @@ rule methylation_extraction_PE_allo_2:
 	threads:
 		CORES
 	shell:
-		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
+		"bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config["UNFINISHED_GENOME"] else "bismark_methylation_extractor -p -o {params.output} --genome_folder {params.genome} --multicore {BISMARK_CORES} --no_overlap --comprehensive --bedGraph --CX {input}"
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (parent 1)
 
