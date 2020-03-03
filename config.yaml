@@ -92,6 +92,10 @@ CLIP_3_R2: 1
 GENOME_PARENT_1: example/genomes/parent1/
 GENOME_PARENT_2: example/genomes/parent2/
 
+# If the genomes provided above are unfinished (i.e. have thousands of scoffolds), set the following parameter to True
+
+UNFINISHED_GENOME: False
+
 ###############################################################################
 ##############                    READ SORTING                    ##############
 ###############################################################################
