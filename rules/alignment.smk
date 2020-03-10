@@ -6,10 +6,10 @@
 ## Run Bismark to prepare synthetic bisulfite converted genomes
 
 rule bismark_prepare_genome_1:
-	input:
-		genome1 = config["GENOME_PARENT_1"]
 	output:
 		GENOME_1 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
+	params:
+		genome1 = config["GENOME_PARENT_1"]
 	benchmark:
 		OUTPUT_DIR + "benchmark/prepare_genome.txt"
 	conda:
@@ -20,10 +20,10 @@ rule bismark_prepare_genome_1:
 ## Run Bismark to prepare synthetic bisulfite converted genomes
 
 rule bismark_prepare_genome_2:
-	input:
-		genome2 = config["GENOME_PARENT_2"]
 	output:
 		GENOME_2 + "Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
+	params:
+		genome2 = config["GENOME_PARENT_2"]
 	benchmark:
 		OUTPUT_DIR + "benchmark/prepare_genome.txt"
 	conda:
