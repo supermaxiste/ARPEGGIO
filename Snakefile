@@ -27,12 +27,26 @@ TRIM_CORES = max(math.trunc(CORES/6 - 1), 1) if config["IS_PAIRED"] else max(mat
 n_samples_p1 = len(samples.name[samples.origin == "parent1"])
 n_samples_p2 = len(samples.name[samples.origin == "parent2"])
 n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
+
+# Check if metadata file has been setup and read correctly
+
+if !config["POLYPLOID_ONLY"] and !config["DIPLOID_ONLY"]:
+	if n_samples_p1 < 2:
+		sys.exit("There seems to be fewer than two samples for your parent1 species, please have at least two samples in your metadata file or make sure the metadata file has the correct formatting (tab-separated columns)")
+	elif n_samples_p2 < 2:
+		sys.exit("There seems to be fewer than two samples for your parent2 species, please have at least two samples in your metadata file or make sure the metadata file has the correct formatting (tab-separated columns)")
+	elif n_samples_allo < 2:
+		sys.exit("There seems to be fewer than two samples for your allopolyploid species, please have at least two samples in your metadata file or make sure the metadata file has the correct formatting (tab-separated columns)")
 if config["POLYPLOID_ONLY"]:
 	n_samples_A = len(samples.name[(samples.origin == "allopolyploid") & (samples.condition == "A")])
 	n_samples_B = len(samples.name[(samples.origin == "allopolyploid") & (samples.condition == "B")])
+	if n_samples_A < 2 or n_samples_B < 2:
+		sys.exit("There seems to be fewer than two samples for either of your two conditions, please have at least two samples per condition in your metadata file or make sure the metadata file has the correct formatting (tab-separated columns)")
 if config["DIPLOID_ONLY"]:
 	n_samples_A = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "A")])
 	n_samples_B = len(samples.name[((samples.origin == "parent1") | (samples.origin == "parent2")) & (samples.condition == "B")])
+	if n_samples_A < 2 or n_samples_B < 2:
+		sys.exit("There seems to be fewer than two samples for either of your two conditions, please have at least two samples per condition in your metadata file or make sure the metadata file has the correct formatting (tab-separated columns)")
 
 ####################### Docker setup ##########################################
 

@@ -15,7 +15,7 @@ rule bismark_prepare_genome_1:
 	conda:
 		"../envs/environment.yaml"
 	shell:
-		"bismark_genome_preparation {input.genome1}"
+		"bismark_genome_preparation {params.genome1}"
 
 ## Run Bismark to prepare synthetic bisulfite converted genomes
 
@@ -29,7 +29,7 @@ rule bismark_prepare_genome_2:
 	conda:
 		"../envs/environment.yaml"
 	shell:
-		"bismark_genome_preparation {input.genome2}"
+		"bismark_genome_preparation {params.genome2}"
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are single-end.
 
