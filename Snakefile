@@ -30,7 +30,7 @@ n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
 
 # Check if metadata file has been setup and read correctly
 
-if !config["POLYPLOID_ONLY"] and !config["DIPLOID_ONLY"]:
+if ~(config["POLYPLOID_ONLY"]) and ~(config["DIPLOID_ONLY"]):
 	if n_samples_p1 < 2:
 		sys.exit("There seems to be fewer than two samples for your parent1 species, please have at least two samples in your metadata file or make sure the metadata file has the correct formatting (tab-separated columns)")
 	elif n_samples_p2 < 2:
