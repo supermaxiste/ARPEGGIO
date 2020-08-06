@@ -26,4 +26,4 @@ install:
 script:
   - source activate snakemake
   ## run the workflow
-  - travis_wait 50 snakemake --use-conda
+  - travis_wait 50 snakemake --use-conda --cores 1
