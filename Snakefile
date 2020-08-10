@@ -6,6 +6,18 @@ if len(config) == 0:
 	else:
 		sys.exit("Make sure there is a config.yaml file in " + os.getcwd() + " or specify one with the --configfile commandline parameter.")
 
+## Conditional parameters check
+
+if config["RUN_BISMARK"]==False:
+	if config["RUN_READ_SORTING"] or config["RUN_DMR_ANALYSIS"] or config["RUN_DOWNSTREAM"]:
+		sys.exit("Your conditional parameters are set incorrectly: one step is stopping the workflow and one downstream step is set to True. Please fix this problem before running ARPEGGIO")
+if config["RUN_READ_SORTING"]==False:
+	if config["RUN_DMR_ANALYSIS"] or config["RUN_DOWNSTREAM"]:
+		sys.exit("Your conditional parameters are set incorrectly: one step is stopping the workflow and one downstream step is set to True. Please fix this problem before running ARPEGGIO")
+if config["RUN_DMR_ANALYSIS"]==False:
+	if config["RUN_DOWNSTREAM"]:
+		sys.exit("Your conditional parameters are set incorrectly: one step is stopping the workflow and one downstream step is set to True. Please fix this problem before running ARPEGGIO")
+
 ## Import metadata file
 import pandas as pd
 samples = pd.read_csv(config["METADATA"], sep='\t')
