@@ -24,7 +24,7 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 ## Workflow overview
 
 <p align="center">
-  <img src="images/Workflow_paper.png">
+  <img src="images/ARPEGGIO_scheme.png">
 </p>
 
 ## Installation
