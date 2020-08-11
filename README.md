@@ -24,7 +24,7 @@ Besides the workflow itself (which is already quite a lot of new), ARPEGGIO incl
 ## Workflow overview
 
 <p align="center">
-  <img width="300" height="494" src="images/WorkflowV3.png">
+  <img src="images/ARPEGGIO_scheme.png">
 </p>
 
 ## Installation
@@ -56,3 +56,7 @@ Google doesn't help? Are you stuck on an error that no one else seems to be havi
 ## Credits
 
 This project was inspired by ![ARMOR](https://github.com/csoneson/ARMOR), if you work with RNA-seq data check it out!
+
+## Citing ARPEGGIO
+
+ARPEGGIO: Automated Reproducible Polyploid EpiGenetic GuIdance workflOw, https://www.biorxiv.org/content/10.1101/2020.07.16.206193v1
