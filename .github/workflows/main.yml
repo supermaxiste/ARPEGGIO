@@ -24,11 +24,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
     
     # Install conda
       - name: conda-setup
-        uses: s-weigand/setup-conda@v1.0.2
+        uses: s-weigand/setup-conda@v1.0.5
         with:
           activate-conda: true
           update-conda: true
@@ -36,11 +36,8 @@ jobs:
  
     # Install snakemake
       - name: install-snakemake
-        run: |
-          conda install snakemake=5.20.1
+        run: conda install snakemake=5.20.1
           
-    # Run ARPEGGIO
-          
+    # Run ARPEGGIO   
       - name: run-ARPEGGIO
-        run: |
-          snakemake --use-conda --cores 1
+        run: snakemake --use-conda --cores 1
