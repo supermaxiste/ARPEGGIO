@@ -112,36 +112,38 @@ def dmr_input(wildcards):
 	if config["RUN_DOWNSTREAM"]:
 		if config["ONLY_CG_CONTEXT"]:
 			if config["POLYPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context"]))
-			elif config["DIPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context"]))
-			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
-		else:
-			if config["POLYPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			elif config["DIPLOID_ONLY"]:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
-	if config["RUN_DMR_ANALYSIS"]:
-		if config["ONLY_CG_CONTEXT"]:
-			if config["POLYPLOID_ONLY"]:
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context"]))
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context"]))
 			elif config["DIPLOID_ONLY"]:
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context"]))
 			else:
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
-				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context"]))
 		else:
 			if config["POLYPLOID_ONLY"]:
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 			elif config["DIPLOID_ONLY"]:
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+	if config["RUN_DMR_ANALYSIS"]:
+		if config["ONLY_CG_CONTEXT"]:
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context"]))
+			else:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context"]))
+		else:
+			if config["POLYPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
+			elif config["DIPLOID_ONLY"]:
+				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 			else:
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
 				input.extend(expand(OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt", context = ["CG_context", "CHG_context", "CHH_context"]))
