@@ -128,7 +128,7 @@ rule dmr_genes_special_polyploid_1:
 		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
-		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}_1"
+		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1"
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -142,7 +142,7 @@ rule dmr_genes_special_polyploid_2:
 		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt"
 	params:
 		geneID2 = config["GENE_ID_PARENT_2"],
-		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}_2"
+		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2"
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
