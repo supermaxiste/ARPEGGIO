@@ -1,3 +1,9 @@
+## Check minimum Snakemake version
+
+from snakemake.utils import min_version
+
+min_version("5.20.1")
+
 ## Configuration file check
 import os
 if len(config) == 0:
