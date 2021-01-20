@@ -3,9 +3,9 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - trim-galore=0.6.5
-  - fastqc=0.11.8
-  - bismark=0.22.3
-  - samtools=1.10
-  - multiqc=1.8
+  - trim-galore=0.6.6
+  - fastqc=0.11.9
+  - bismark=0.23.0
+  - samtools=1.11
+  - multiqc=1.9
   - pigz=2.3.4
