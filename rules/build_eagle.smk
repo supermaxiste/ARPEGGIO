@@ -55,7 +55,7 @@ rule extract_eagle:
     output:
         eagle_mk = EAGLE_MK_PATH
     params:
-        build_prefix = lambda w, output: os.path.split(output.eagle_tar)[0]
+        build_prefix = lambda w, input: os.path.split(input.eagle_tar)[0]
     log:
         "logs/extract_eagle.log"
     conda:
