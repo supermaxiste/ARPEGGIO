@@ -38,8 +38,8 @@ rule read_sorting_PE:
 		reads1 = f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bam",
 		reads2 = f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bam"
 	output:
-		f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified1.ref.bam",
-		f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified2.ref.bam"
+		o1 = f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified1.ref.bam",
+		o2 = f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified2.ref.bam"
 	log:
 		f"logs/read_sorting_{{sample}}_PE.log"
 	benchmark:

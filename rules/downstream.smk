@@ -126,13 +126,13 @@ rule dmr_genes_special_diploid:
 		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_genes_overlap.txt",
 		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid.txt"
 	output:
-		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_diploid_{{context}}.txt"
+		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_diploid_{{context}}.txt"
 	log:
 		f"logs/dmr_genes_{{context}}_special_diploid.log"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
 		geneID2 = config["GENE_ID_PARENT_2"],
-		o1 = lambda w, output: os.path.splitext(output)[0]
+		o1 = lambda w, output: os.path.splitext(output.o1)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -143,12 +143,12 @@ rule dmr_genes_special_polyploid_1:
 		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt",
 		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
-		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_1.txt"
+		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_1.txt"
 	log:
 		f"logs/dmr_genes_{{context}}_special_polyploid1.log"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
-		o1 = lambda w, output: os.path.splitext(output)[0]
+		o1 = lambda w, output: os.path.splitext(output.o1)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -159,12 +159,12 @@ rule dmr_genes_special_polyploid_2:
 		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt",
 		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
-		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_2.txt"
+		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_2.txt"
 	log:
 		f"logs/dmr_genes_{{context}}_special_polyploid2.log"
 	params:
 		geneID2 = config["GENE_ID_PARENT_2"],
-		o2 = lambda w, output: os.path.splitext(output)[0]
+		o2 = lambda w, output: os.path.splitext(output.o1)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:

@@ -12,11 +12,11 @@ rule trim_galore_se:
 	input:
 		fastq1 = f"{RAW_DATA_DIR}{{sample}}.{str(config['RAW_DATA_EXTENSION'])}.gz"
 	output:
-		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_trimmed.fq.gz"
+		o1 = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_trimmed.fq.gz"
 	log:
 		f"logs/trim_galore_{{sample}}_se.log"
 	params:
-		FASTQtrimmeddir = lambda w, output: os.path.split(output)[0],
+		FASTQtrimmeddir = lambda w, output: os.path.split(output.o1)[0],
 		trim_5_r1 = config["CLIP_5_R1"],
 		trim_3_r1 = config["CLIP_3_R1"],
 		trim_cores = TRIM_CORES
@@ -36,12 +36,12 @@ rule trim_galore_pe:
 		fastq1 = f"{RAW_DATA_DIR}{{sample}}_{str(config['PAIR_1'])}.{str(config['RAW_DATA_EXTENSION'])}.gz",
 		fastq2 = f"{RAW_DATA_DIR}{{sample}}_{str(config['PAIR_2'])}.{str(config['RAW_DATA_EXTENSION'])}.gz"
 	output:
-		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_1'])}_val_1.fq.gz",
-		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_2'])}_val_2.fq.gz"
+		o1 = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_1'])}_val_1.fq.gz",
+		o2 = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_2'])}_val_2.fq.gz"
 	log:
 		f"logs/trim_galore_{{sample}}_pe.log"
 	params:
-		FASTQtrimmeddir = lambda w, output: os.path.split(output)[0],
+		FASTQtrimmeddir = lambda w, output: os.path.split(output.o1)[0],
 		trim_5_r1 = config["CLIP_5_R1"],
 		trim_5_r2 = config["CLIP_5_R2"],
 		trim_3_r1 = config["CLIP_3_R1"],

@@ -11,9 +11,9 @@ rule quality_control:
 	input:
 		fastq = f"{RAW_DATA_DIR}{{sample}}.{str(config['RAW_DATA_EXTENSION'])}.gz"
 	output:
-		f"{OUTPUT_DIR}FastQC/{{sample}}_fastqc.zip"
+		o1 = f"{OUTPUT_DIR}FastQC/{{sample}}_fastqc.zip"
 	params:
-		FastQC = lambda w, output: os.path.split(output)[0]
+		FastQC = lambda w, output: os.path.split(output.o1)[0]
 	log:
 		f"logs/qc_{{sample}}.log"
 	benchmark:
@@ -31,9 +31,9 @@ rule quality_control_trimmed_SE:
 	input:
 		fastq = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_trimmed.fq.gz"
 	output:
-		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_trimmed_fastqc.zip"
+		o1 = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_trimmed_fastqc.zip"
 	params:
-		FastQC = lambda w, output: os.path.split(output)[0]
+		FastQC = lambda w, output: os.path.split(output.o1)[0]
 	log:
 		f"logs/qc_{{sample}}_trimmedSE.log"
 	benchmark:
@@ -53,10 +53,10 @@ rule quality_control_trimmed_PE:
 		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_1'])}_val_1.fq.gz",
 		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_2'])}_val_2.fq.gz"
 	output:
-		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_1'])}_val_1_fastqc.zip",
-		f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_2'])}_val_2_fastqc.zip"
+		o1 = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_1'])}_val_1_fastqc.zip",
+		o2 = f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_2'])}_val_2_fastqc.zip"
 	params:
-		FastQC = lambda w, output: os.path.split(output)[0]
+		FastQC = lambda w, output: os.path.split(output.o1)[0]
 	log:
 		f"logs/qc_{{sample}}_trimmedPE.log"
 	benchmark:
@@ -181,13 +181,13 @@ rule qualimap_p1:
 	input:
 		f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_bismark_bt2.deduplicated_sorted.bam")
 	output:
-		f"{OUTPUT_DIR}qualimap/{{sample}}_p1/qualimapReport.html"
+		o1 = f"{OUTPUT_DIR}qualimap/{{sample}}_p1/qualimapReport.html"
 	log:
 		f"logs/qualimap_{{sample}}_p1.log"
 	benchmark:
 		f"{OUTPUT_DIR}benchmark/qualimap_p1_{{sample}}.txt"
 	params:
-		output = lambda w, output: os.path.split(output)[0]
+		output = lambda w, output: os.path.split(output.o1)[0]
 	conda:
 		"../envs/environment2.yaml"
 	threads:
@@ -201,13 +201,13 @@ rule qualimap_p2:
 	input:
 		f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated_sorted.bam" if config["IS_PAIRED"] else (f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_trimmed_bismark_bt2.deduplicated_sorted.bam" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_bismark_bt2.deduplicated_sorted.bam")
 	output:
-		f"{OUTPUT_DIR}qualimap/{{sample}}_p2/qualimapReport.html"
+		o1 = f"{OUTPUT_DIR}qualimap/{{sample}}_p2/qualimapReport.html"
 	log:
 		f"logs/qualimap_{{sample}}_p2.log"
 	benchmark:
 		f"{OUTPUT_DIR}benchmark/qualimap_p2_{{sample}}.txt"
 	params:
-		output = lambda w, output: os.path.split(output)[0]
+		output = lambda w, output: os.path.split(output.o1)[0]
 	conda:
 		"../envs/environment2.yaml"
 	threads:
@@ -221,13 +221,13 @@ rule qualimap_allo_se:
 	input:
 		genome = f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified{{one_or_two}}_sorted.ref.bam" if config["RUN_READ_SORTING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_trimmed_bismark_bt2.deduplicated_sorted_allo.bam" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_bismark_bt2.deduplicated_sorted_allo.bam"
 	output:
-		f"{OUTPUT_DIR}qualimap/{{sample}}_allo_se_{{one_or_two}}/qualimapReport.html"
+		o1 = f"{OUTPUT_DIR}qualimap/{{sample}}_allo_se_{{one_or_two}}/qualimapReport.html"
 	log:
 		f"logs/qualimap_{{sample}}_{{one_or_two}}_alloSE.log"
 	benchmark:
 		f"{OUTPUT_DIR}benchmark/qualimap_allo_se_{{sample}}_{{one_or_two}}.txt"
 	params:
-		output = lambda w, output: os.path.split(output)[0]
+		output = lambda w, output: os.path.split(output.o1)[0]
 	conda:
 		"../envs/environment2.yaml"
 	threads:
@@ -241,13 +241,13 @@ rule qualimap_allo_pe:
 	input:
 		genome = f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified{{one_or_two}}_sorted.ref.bam" if config["RUN_READ_SORTING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bam"
 	output:
-		f"{OUTPUT_DIR}qualimap/{{sample}}_allo_pe_{{one_or_two}}/qualimapReport.html"
+		o1 = f"{OUTPUT_DIR}qualimap/{{sample}}_allo_pe_{{one_or_two}}/qualimapReport.html"
 	log:
 		f"logs/qualimap_{{sample}}_{{one_or_two}}_alloPE.log"
 	benchmark:
 		f"{OUTPUT_DIR}benchmark/qualimap_allo_pe_{{sample}}_{{one_or_two}}.txt"
 	params:
-		output = lambda w, output: os.path.split(output)[0]
+		output = lambda w, output: os.path.split(output.o1)[0]
 	conda:
 		"../envs/environment2.yaml"
 	threads:
@@ -261,12 +261,12 @@ rule multiqc:
 	input:
 		multiqc_input
 	output:
-		f"{OUTPUT_DIR}MultiQC/multiqc_report.html"
+		o1 = f"{OUTPUT_DIR}MultiQC/multiqc_report.html"
 	log:
 		f"logs/multiqc.log"
 	params:
 		inputdir = multiqc_params,
-		multiqcdir = lambda w, output: os.path.split(output)[0]
+		multiqcdir = lambda w, output: os.path.split(output.o1)[0]
 	benchmark:
 		f"{OUTPUT_DIR}benchmark/multiqc.txt"
 	conda:
