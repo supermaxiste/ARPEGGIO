@@ -1,3 +1,5 @@
+import os.path
+
 # This file includes all rules related to downstream analyses of DMRs
 # DMR = Differentially Methylated Region
 # Tools used in the rules: R scripts, bedtools
@@ -8,11 +10,13 @@
 
 rule dm_regions_bed:
 	input:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent{one_or_two}_v_allo.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent{{one_or_two}}_v_allo.txt"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent{one_or_two}_v_allo_sig_sorted.bed"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent{{one_or_two}}_v_allo_sig_sorted.bed"
+	log:
+		f"logs/dm_region_{{context}}_p{{one_or_two}}.log"
 	params:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent{one_or_two}_v_allo_sig"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent{{one_or_two}}_v_allo_sig"
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -22,11 +26,13 @@ rule dm_regions_bed:
 
 rule dm_regions_bed_special:
 	input:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.bed"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
+	log:
+		f"logs/dm_region_{{context}}_special.log"
 	params:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig"
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -36,9 +42,11 @@ rule dm_regions_bed_special:
 
 rule bedtools_intersect_1:
 	input:
-		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_sig_sorted.bed"
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent1_v_allo_sig_sorted.bed"
 	output:
-		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_genes_overlap.txt"
+		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent1_v_allo_genes_overlap.txt"
+	log:
+		f"logs/bedtools_{{context}}_p1.log"
 	params:
 		anno1 = config["ANNOTATION_PARENT_1"]
 	conda:
@@ -48,9 +56,11 @@ rule bedtools_intersect_1:
 
 rule bedtools_intersect_2:
 	input:
-		i2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_sig_sorted.bed"
+		i2 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent2_v_allo_sig_sorted.bed"
 	output:
-		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_genes_overlap.txt"
+		o2 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent2_v_allo_genes_overlap.txt"
+	log:
+		f"logs/bedtools_{{context}}_p2.log"
 	params:
 		anno2 = config["ANNOTATION_PARENT_2"]
 	conda:
@@ -62,9 +72,11 @@ rule bedtools_intersect_2:
 
 rule bedtools_intersect_special:
 	input:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_sig_sorted.bed"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_genes_overlap.txt" if config["DIPLOID_ONLY"] else OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_genes_overlap.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_genes_overlap.txt" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt"
+	log:
+		f"logs/bedtools_{{context}}_special.log"
 	params:
 		anno1 = config["ANNOTATION_PARENT_1"],
 		anno2 = config["ANNOTATION_PARENT_2"]
@@ -77,13 +89,15 @@ rule bedtools_intersect_special:
 
 rule dmr_genes_1:
 	input:
-		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo_genes_overlap.txt",
-		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent1_v_allo.txt"
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent1_v_allo_genes_overlap.txt",
+		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent1_v_allo.txt"
 	output:
-		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}.txt"
+		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_parent1_v_allo_{{context}}.txt"
+	log:
+		f"logs/dmr_genes_{{context}}_p1.log"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
-		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent1_v_allo_{context}"
+		o1 = lambda w, output: os.path.splitext(output.o1)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -91,13 +105,15 @@ rule dmr_genes_1:
 
 rule dmr_genes_2:
 	input:
-		i2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo_genes_overlap.txt",
-		dm2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/parent2_v_allo.txt"
+		i2 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent2_v_allo_genes_overlap.txt",
+		dm2 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent2_v_allo.txt"
 	output:
-		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}.txt"
+		o2 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_parent2_v_allo_{{context}}.txt"
+	log:
+		f"logs/dmr_genes_{{context}}_p2.log"
 	params:
 		geneID2 = config["GENE_ID_PARENT_2"],
-		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_parent2_v_allo_{context}"
+		o2 = lambda w, output: os.path.splitext(output.o2)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -107,14 +123,16 @@ rule dmr_genes_2:
 
 rule dmr_genes_special_diploid:
 	input:
-		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid_genes_overlap.txt",
-		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_diploid.txt"
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_genes_overlap.txt",
+		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid.txt"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_diploid_{{context}}.txt"
+	log:
+		f"logs/dmr_genes_{{context}}_special_diploid.log"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
 		geneID2 = config["GENE_ID_PARENT_2"],
-		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_diploid_{context}"
+		o1 = lambda w, output: os.path.splitext(output)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -122,13 +140,15 @@ rule dmr_genes_special_diploid:
 
 rule dmr_genes_special_polyploid_1:
 	input:
-		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_genes_overlap.txt",
-		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt"
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt",
+		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_1.txt"
+	log:
+		f"logs/dmr_genes_{{context}}_special_polyploid1.log"
 	params:
 		geneID1 = config["GENE_ID_PARENT_1"],
-		o1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_1"
+		o1 = lambda w, output: os.path.splitext(output)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
@@ -136,13 +156,15 @@ rule dmr_genes_special_polyploid_1:
 
 rule dmr_genes_special_polyploid_2:
 	input:
-		i1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid_genes_overlap.txt",
-		dm1 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/A_v_B_polyploid.txt"
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt",
+		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
-		OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_2.txt"
+	log:
+		f"logs/dmr_genes_{{context}}_special_polyploid2.log"
 	params:
 		geneID2 = config["GENE_ID_PARENT_2"],
-		o2 = OUTPUT_DIR + "DMR_analysis/dmrseq/{context}/DM_genes_A_v_B_polyploid_{context}_2"
+		o2 = lambda w, output: os.path.splitext(output)[0]
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
