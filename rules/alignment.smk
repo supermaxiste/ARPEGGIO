@@ -9,7 +9,7 @@ import os.path
 
 rule bismark_prepare_genome_1:
 	output:
-		f"{GENOME_1}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
+		control = f"{GENOME_1}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
 	log:
 		f"logs/bismark_prepare_genome_1.log"
 	params:
@@ -25,7 +25,7 @@ rule bismark_prepare_genome_1:
 
 rule bismark_prepare_genome_2:
 	output:
-		f"{GENOME_2}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
+		control = f"{GENOME_2}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa"
 	log:
 		f"logs/bismark_prepare_genome_2.log"
 	params:
