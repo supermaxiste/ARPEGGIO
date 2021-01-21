@@ -1,10 +1,16 @@
+## Check minimum Snakemake version
+
+from snakemake.utils import min_version
+
+min_version("5.20.1")
+
 ## Configuration file check
 import os
 if len(config) == 0:
 	if os.path.isfile("./config.yaml"):
 		configfile: "./config.yaml"
 	else:
-		sys.exit("Make sure there is a config.yaml file in " + os.getcwd() + " or specify one with the --configfile commandline parameter.")
+		sys.exit(f"Make sure there is a config.yaml file in {os.getcwd()} or specify one with the --configfile commandline parameter.")
 
 ## Conditional parameters check
 
@@ -40,6 +46,11 @@ n_samples_p1 = len(samples.name[samples.origin == "parent1"])
 n_samples_p2 = len(samples.name[samples.origin == "parent2"])
 n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
 
+# Count number of samples per condition
+
+n_samples_A = len(samples.name[(samples.condition == "A")])
+n_samples_B = len(samples.name[(samples.condition == "B")])
+
 # Check if metadata file has been setup and read correctly
 
 if ((not config["POLYPLOID_ONLY"]) and (not config["DIPLOID_ONLY"])):
@@ -62,7 +73,7 @@ if config["DIPLOID_ONLY"]:
 
 ####################### Docker setup ##########################################
 
-singularity: config["DOCKER_IMAGE"]
+container: config["DOCKER_IMAGE"]
 
 ####################### Functions to define inputs ############################
 
@@ -71,7 +82,7 @@ include: "rules/input_functions.smk"
 ## Run all analyses
 rule all:
 	input:
-		OUTPUT_DIR + "MultiQC/multiqc_report.html",
+		f"{OUTPUT_DIR}MultiQC/multiqc_report.html",
 		dmr_input
 
 ######################### Main rules of ARPEGGIO #############################

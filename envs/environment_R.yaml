@@ -3,5 +3,5 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - bioconductor-dmrseq=1.6.0
-  - r-base=3.6.2
+  - bioconductor-dmrseq=1.10.0
+  - r-base=4.0.3
