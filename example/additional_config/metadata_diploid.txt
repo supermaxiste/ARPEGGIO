@@ -1,0 +1,7 @@
+name	type	origin	condition
+parent11	PE	parent1	A
+parent12	PE	parent1	A
+parent13	PE	parent1	A
+parent21	PE	parent2	B
+parent22	PE	parent2	B
+parent23	PE	parent2	B

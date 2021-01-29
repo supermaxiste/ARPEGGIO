@@ -1,0 +1,7 @@
+name	type	origin	condition
+allopolyploid11	PE	allopolyploid	A
+allopolyploid12	PE	allopolyploid	A
+allopolyploid13	PE	allopolyploid	A
+allopolyploid21	PE	allopolyploid	B
+allopolyploid22	PE	allopolyploid	B
+allopolyploid23	PE	allopolyploid	B
