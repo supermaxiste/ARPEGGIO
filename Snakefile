@@ -51,6 +51,11 @@ n_samples_allo = len(samples.name[samples.origin == "allopolyploid"])
 n_samples_A = len(samples.name[(samples.condition == "A")])
 n_samples_B = len(samples.name[(samples.condition == "B")])
 
+# Check if any element in the metadata is missing
+
+if ((n_samples_p1 is None) or (n_samples_p2 is None) or (n_samples_allo is None) or (n_samples_A is None) or (n_samples_B is None)):
+	sys.exit("There seems to be missing values in your metadata file, please check if the formatting is correct or some entry is missing")
+
 # Check if metadata file has been setup and read correctly
 
 if ((not config["POLYPLOID_ONLY"]) and (not config["DIPLOID_ONLY"])):
