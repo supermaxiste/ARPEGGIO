@@ -28,7 +28,7 @@ rule dm_regions_bed_special:
 	input:
 		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid.txt" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
-		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else  f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
 	log:
 		f"logs/dm_region_{{context}}_special.log"
 	params:
