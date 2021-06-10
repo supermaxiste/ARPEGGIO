@@ -70,11 +70,11 @@ rule bedtools_intersect_2:
 
 # The second downstream rule for special mode: diploid vs diploid or polyploid vs polyploid. Read above for a short explanation of the rule.
 
-rule bedtools_intersect_special:
+rule bedtools_intersect_special_diploid:
 	input:
-		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig_sorted.bed" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig_sorted.bed"
 	output:
-		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_genes_overlap.txt" if config["DIPLOID_ONLY"] else f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt"
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_genes_overlap.txt"
 	log:
 		f"logs/bedtools_{{context}}_special.log"
 	params:
@@ -83,7 +83,35 @@ rule bedtools_intersect_special:
 	conda:
 		"../envs/environment_downstream.yaml"
 	shell:
-		"bedtools intersect -a {params.anno1} -b {input} -wo > {output}" if (sum(samples.origin == "parent1") > 0) else ("bedtools intersect -a {params.anno2} -b {input} -wo > {output}" if (sum(samples.origin == "parent2") > 0) else "bedtools intersect -a {params.anno1} -b {input} -wo > {output}; bedtools intersect -a {params.anno2} -b {input} -wo >> {output}")
+		"bedtools intersect -a {params.anno1} -b {input} -wo > {output}" if (sum(samples.origin == "parent1") > 0) else "bedtools intersect -a {params.anno2} -b {input} -wo > {output}"
+
+rule bedtools_intersect_special_polyploid_1:
+	input:
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
+	output:
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap_1.txt"
+	log:
+		f"logs/bedtools_{{context}}_special_1.log"
+	params:
+		anno1 = config["ANNOTATION_PARENT_1"]
+	conda:
+		"../envs/environment_downstream.yaml"
+	shell:
+		"bedtools intersect -a {params.anno1} -b {input} -wo > {output}"
+
+rule bedtools_intersect_special_polyploid_2:
+	input:
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
+	output:
+		f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap_2.txt"
+	log:
+		f"logs/bedtools_{{context}}_special_2.log"
+	params:
+		anno2 = config["ANNOTATION_PARENT_2"]
+	conda:
+		"../envs/environment_downstream.yaml"
+	shell:
+		"bedtools intersect -a {params.anno2} -b {input} -wo > {output}"
 
 # The third and final rule for downstream analyses. With overlap information and DMR information, we generate a summary file including gene ID of the genes overlapping with DMRs, all ranges for gene regions and DMRs and methylation status. Methylation status is based on the statistics given by the dmrseq output, taking condition 'A' as reference (i.e. increase means increase compared to condition 'A')
 
@@ -140,7 +168,7 @@ rule dmr_genes_special_diploid:
 
 rule dmr_genes_special_polyploid_1:
 	input:
-		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt",
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap_1.txt",
 		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
 		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_1.txt"
@@ -156,7 +184,7 @@ rule dmr_genes_special_polyploid_1:
 
 rule dmr_genes_special_polyploid_2:
 	input:
-		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap.txt",
+		i1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap_2.txt",
 		dm1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid.txt"
 	output:
 		o1 = f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_2.txt"
