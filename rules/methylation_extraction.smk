@@ -215,7 +215,7 @@ rule methylation_extraction_PE_allo_2:
 
 rule coverage2cytosine_1:
 	input:
-		f1 = f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_bismark_bt2.deduplicated.bismark.cov.gz"))
+		f1 = f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/1.{{sample}}_bismark_bt2.deduplicated.bismark.cov.gz")))
 	output:
 		o1 = f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/{{sample}}.CX_report.txt"
 	log:
@@ -234,7 +234,7 @@ rule coverage2cytosine_1:
 
 rule coverage2cytosine_2:
 	input:
-		f2 = f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_bismark_bt2.deduplicated.bismark.cov.gz"))
+		f2 = f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] and config["RUN_TRIMMING"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bismark.cov.gz" if config["IS_PAIRED"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_trimmed_bismark_bt2.deduplicated.bismark.cov.gz" if config["RUN_TRIMMING"] else (f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/2.{{sample}}_bismark_bt2.deduplicated.bismark.cov.gz")))
 	output:
 		o2 = f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/{{sample}}.CX_report.txt"
 	log:
