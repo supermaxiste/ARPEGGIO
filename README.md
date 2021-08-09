@@ -59,4 +59,4 @@ This project was inspired by ![ARMOR](https://github.com/csoneson/ARMOR), if you
 
 ## Citing ARPEGGIO
 
-ARPEGGIO: Automated Reproducible Polyploid EpiGenetic GuIdance workflOw, https://www.biorxiv.org/content/10.1101/2020.07.16.206193v1
+Milosavljevic, S., Kuo, T., Decarli, S. et al. ARPEGGIO: Automated Reproducible Polyploid EpiGenetic GuIdance workflOw. BMC Genomics 22, 547 (2021). https://doi.org/10.1186/s12864-021-07845-2
