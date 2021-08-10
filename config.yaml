@@ -87,7 +87,7 @@ CLIP_3_R2: 1
 ###############                    ALIGNMENT                    ###############
 ###############################################################################
 
-# Paths to parental genome assemblies
+# Paths to the folder of the parental genome assemblies
 
 GENOME_PARENT_1: example/genomes/parent1/
 GENOME_PARENT_2: example/genomes/parent2/
@@ -100,7 +100,11 @@ UNFINISHED_GENOME: False
 ##############                    READ SORTING                    ##############
 ###############################################################################
 
+
+# Set PHRED score to 64, default is 33
 PHRED_SCORE_64: False
+
+# Path to the genome assemblies files
 ASSEMBLY_PARENT_1: example/genomes/parent1/parent1.fa
 ASSEMBLY_PARENT_2: example/genomes/parent2/parent2.fa
 
