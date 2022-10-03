@@ -7,5 +7,5 @@ dependencies:
   - fastqc=0.11.9
   - bismark=0.23.0
   - samtools=1.11
-  - multiqc=1.9
+  - multiqc=1.13a
   - pigz=2.3.4
