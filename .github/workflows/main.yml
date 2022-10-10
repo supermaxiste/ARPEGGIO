@@ -25,8 +25,8 @@ jobs:
       # Run default snakemake
       - uses: snakemake/snakemake-github-action@v1
         with:
-          directory: './'
-          snakefile: './Snakefile'
+          directory: '.'
+          snakefile: 'Snakefile'
           args: '--cores 1 --use-conda'
 
   run-linting:
@@ -38,8 +38,8 @@ jobs:
       # Run default snakemake
       - uses: snakemake/snakemake-github-action@v1
         with:
-          directory: './'
-          snakefile: './Snakefile'
+          directory: '.'
+          snakefile: 'Snakefile'
           args: '--lint'
 
   run-modes:
@@ -52,30 +52,30 @@ jobs:
       - name: run-ARPEGGIO-dp-PE
         uses: snakemake/snakemake-github-action@v1
         with:
-          directory: './'
-          snakefile: './Snakefile'
+          directory: '.'
+          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_dp_PE.yaml -n'
 
       # Run snakemake diploid only mode single-end reads
       - name: run-ARPEGGIO-dp-SE
         uses: snakemake/snakemake-github-action@v1
         with:
-          directory: './'
-          snakefile: './Snakefile'
+          directory: '.'
+          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_dp_SE.yaml -n'
 
       # Run snakemake polyploid only mode paired-end reads
       - name: run-ARPEGGIO-pp-PE
         uses: snakemake/snakemake-github-action@v1
         with:
-          directory: './'
-          snakefile: './Snakefile'
+          directory: '.'
+          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_pp_PE.yaml -n'
 
       # Run snakemake polyploid only mode single-end reads
       - name: run-ARPEGGIO-pp-SE
         uses: snakemake/snakemake-github-action@v1
         with:
-          directory: './'
-          snakefile: './Snakefile'
+          directory: '.'
+          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_pp_SE.yaml -n'
