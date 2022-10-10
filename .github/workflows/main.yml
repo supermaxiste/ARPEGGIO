@@ -56,7 +56,6 @@ jobs:
           directory: '.'
           args: '--configfile example/additional_config/config_dp_PE.yaml -n'
 
-      - uses: actions/checkout@v3
       # Run snakemake diploid only mode single-end reads
       - name: run-ARPEGGIO-dp-SE
         uses: snakemake/snakemake-github-action@v1
@@ -64,7 +63,6 @@ jobs:
           directory: '.'
           args: '--configfile example/additional_config/config_dp_SE.yaml -n'
       
-      - uses: actions/checkout@v3
       # Run snakemake polyploid only mode paired-end reads
       - name: run-ARPEGGIO-pp-PE
         uses: snakemake/snakemake-github-action@v1
@@ -72,7 +70,6 @@ jobs:
           directory: '.'
           args: '--configfile example/additional_config/config_pp_PE.yaml -n'
 
-      - uses: actions/checkout@v3
       # Run snakemake polyploid only mode single-end reads
       - name: run-ARPEGGIO-pp-SE
         uses: snakemake/snakemake-github-action@v1
