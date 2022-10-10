@@ -26,7 +26,6 @@ jobs:
       - uses: snakemake/snakemake-github-action@v1
         with:
           directory: '.'
-          snakefile: 'Snakefile'
           args: '--cores 1 --use-conda'
 
   run-linting:
@@ -39,7 +38,6 @@ jobs:
       - uses: snakemake/snakemake-github-action@v1
         with:
           directory: '.'
-          snakefile: 'Snakefile'
           args: '--lint'
 
   run-modes:
@@ -53,7 +51,6 @@ jobs:
         uses: snakemake/snakemake-github-action@v1
         with:
           directory: '.'
-          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_dp_PE.yaml -n'
 
       # Run snakemake diploid only mode single-end reads
@@ -61,7 +58,6 @@ jobs:
         uses: snakemake/snakemake-github-action@v1
         with:
           directory: '.'
-          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_dp_SE.yaml -n'
 
       # Run snakemake polyploid only mode paired-end reads
@@ -69,7 +65,6 @@ jobs:
         uses: snakemake/snakemake-github-action@v1
         with:
           directory: '.'
-          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_pp_PE.yaml -n'
 
       # Run snakemake polyploid only mode single-end reads
@@ -77,5 +72,4 @@ jobs:
         uses: snakemake/snakemake-github-action@v1
         with:
           directory: '.'
-          snakefile: 'Snakefile'
           args: '--configfile example/additional_config/config_pp_SE.yaml -n'
