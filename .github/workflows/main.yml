@@ -7,7 +7,6 @@ name: ARPEGGIO_run
 # releases as well
 on:
   push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
   release:
