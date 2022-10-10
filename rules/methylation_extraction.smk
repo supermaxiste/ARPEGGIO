@@ -11,9 +11,9 @@ import os.path
 
 rule methylation_extraction_SE_parent_1:
     input:
-        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_trimmed_bismark_bt2.deduplicated.bam" if config[
-            "RUN_TRIMMING"
-        ] else (
+        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_trimmed_bismark_bt2.deduplicated.bam"
+        if config["RUN_TRIMMING"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_bismark_bt2.deduplicated.bam"
         ),
     output:
@@ -70,7 +70,7 @@ rule methylation_extraction_SE_parent_1:
     threads: CORES
     shell:
         "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -81,9 +81,9 @@ rule methylation_extraction_SE_parent_1:
 
 rule methylation_extraction_SE_parent_2:
     input:
-        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_trimmed_bismark_bt2.deduplicated.bam" if config[
-            "RUN_TRIMMING"
-        ] else (
+        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_trimmed_bismark_bt2.deduplicated.bam"
+        if config["RUN_TRIMMING"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_bismark_bt2.deduplicated.bam"
         ),
     output:
@@ -140,7 +140,7 @@ rule methylation_extraction_SE_parent_2:
     threads: CORES
     shell:
         "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -151,9 +151,9 @@ rule methylation_extraction_SE_parent_2:
 
 rule methylation_extraction_SE_allo_1:
     input:
-        f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified1.ref.bam" if config[
-            "RUN_READ_SORTING"
-        ] else (
+        f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified1.ref.bam"
+        if config["RUN_READ_SORTING"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_trimmed_bismark_bt2.deduplicated.bam"
             if config["RUN_TRIMMING"]
             else (
@@ -236,7 +236,7 @@ rule methylation_extraction_SE_allo_1:
     threads: CORES
     shell:
         "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -247,9 +247,9 @@ rule methylation_extraction_SE_allo_1:
 
 rule methylation_extraction_SE_allo_2:
     input:
-        f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified2.ref.bam" if config[
-            "RUN_READ_SORTING"
-        ] else (
+        f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified2.ref.bam"
+        if config["RUN_READ_SORTING"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_trimmed_bismark_bt2.deduplicated.bam"
             if config["RUN_TRIMMING"]
             else (
@@ -332,7 +332,7 @@ rule methylation_extraction_SE_allo_2:
     threads: CORES
     shell:
         "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -343,9 +343,9 @@ rule methylation_extraction_SE_allo_2:
 
 rule methylation_extraction_PE_parent_1:
     input:
-        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam" if config[
-            "RUN_TRIMMING"
-        ] else (
+        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam"
+        if config["RUN_TRIMMING"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bam"
         ),
     output:
@@ -409,7 +409,7 @@ rule methylation_extraction_PE_parent_1:
     threads: CORES
     shell:
         "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -420,9 +420,9 @@ rule methylation_extraction_PE_parent_1:
 
 rule methylation_extraction_PE_parent_2:
     input:
-        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam" if config[
-            "RUN_TRIMMING"
-        ] else (
+        f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam"
+        if config["RUN_TRIMMING"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bam"
         ),
     output:
@@ -486,7 +486,7 @@ rule methylation_extraction_PE_parent_2:
     threads: CORES
     shell:
         "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -497,9 +497,9 @@ rule methylation_extraction_PE_parent_2:
 
 rule methylation_extraction_PE_allo_1:
     input:
-        f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified1.ref.bam" if config[
-            "RUN_READ_SORTING"
-        ] and config["IS_PAIRED"] else (
+        f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified1.ref.bam"
+        if config["RUN_READ_SORTING"] and config["IS_PAIRED"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam"
             if config["RUN_TRIMMING"]
             else (
@@ -593,7 +593,7 @@ rule methylation_extraction_PE_allo_1:
     threads: CORES
     shell:
         "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -604,9 +604,9 @@ rule methylation_extraction_PE_allo_1:
 
 rule methylation_extraction_PE_allo_2:
     input:
-        f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified2.ref.bam" if config[
-            "RUN_READ_SORTING"
-        ] and config["IS_PAIRED"] else (
+        f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified2.ref.bam"
+        if config["RUN_READ_SORTING"] and config["IS_PAIRED"]
+        else (
             f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_val_1_bismark_bt2_pe.deduplicated.bam"
             if config["RUN_TRIMMING"]
             else (
@@ -700,7 +700,7 @@ rule methylation_extraction_PE_allo_2:
     threads: CORES
     shell:
         "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
-            "UNFINISHED_GENOME"
+        "UNFINISHED_GENOME"
         ] else (
             "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
         )
@@ -734,9 +734,7 @@ rule coverage2cytosine_1:
         f"{OUTPUT_DIR}benchmark/c2c_1_{{sample}}.txt"
     params:
         genome1=config["GENOME_PARENT_1"],
-        filename1=lambda w, output: os.path.splitext(os.path.splitext(output.o1)[0])[
-            0
-        ],
+        filename1=lambda w, output: os.path.splitext(os.path.splitext(output.o1)[0])[0],
     conda:
         "../envs/environment.yaml"
     shell:
@@ -771,9 +769,7 @@ rule coverage2cytosine_2:
         f"{OUTPUT_DIR}benchmark/c2c_2_{{sample}}.txt"
     params:
         genome2=config["GENOME_PARENT_2"],
-        filename2=lambda w, output: os.path.splitext(os.path.splitext(output.o2)[0])[
-            0
-        ],
+        filename2=lambda w, output: os.path.splitext(os.path.splitext(output.o2)[0])[0],
     conda:
         "../envs/environment.yaml"
     shell:
@@ -816,9 +812,7 @@ rule coverage2cytosine_allo_1:
         f"{OUTPUT_DIR}benchmark/c2c_allo_{{sample}}.txt"
     params:
         genome1=config["GENOME_PARENT_1"],
-        filename1=lambda w, output: os.path.splitext(os.path.splitext(output.o1)[0])[
-            0
-        ],
+        filename1=lambda w, output: os.path.splitext(os.path.splitext(output.o1)[0])[0],
     conda:
         "../envs/environment.yaml"
     shell:
@@ -861,9 +855,7 @@ rule coverage2cytosine_allo_2:
         f"{OUTPUT_DIR}benchmark/c2c_allo_{{sample}}.txt"
     params:
         genome2=config["GENOME_PARENT_2"],
-        filename2=lambda w, output: os.path.splitext(os.path.splitext(output.o2)[0])[
-            0
-        ],
+        filename2=lambda w, output: os.path.splitext(os.path.splitext(output.o2)[0])[0],
     conda:
         "../envs/environment.yaml"
     shell:
