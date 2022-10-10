@@ -1,6 +1,6 @@
 # This is a basic workflow adapted from the default Action worflow
 
-name: ARPEGGIO
+name: ARPEGGIO_run
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch. Added trigger to publishhed and created 
@@ -23,21 +23,9 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-    
-    # Install conda
-      - name: conda-setup
-        uses: s-weigand/setup-conda@v1.0.5
-        with:
-          activate-conda: true
-          update-conda: true
-          conda-channels: 'bioconda,conda-forge,defaults'
- 
-    # Install snakemake
-      - name: install-snakemake
-        run: conda install snakemake=5.20.1
-          
-    # Run ARPEGGIO   
-      - name: run-ARPEGGIO
-        run: snakemake --use-conda --cores 1
+      # Run default snakemake
+      - uses: snakemake/snakemake-github-action@v1
+	with:
+	  directory: './'
+	  snakefile: 'Snakefile'
+	  args: '--cores 1 --use-conda'
