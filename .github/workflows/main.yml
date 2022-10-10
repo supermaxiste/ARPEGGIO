@@ -25,7 +25,7 @@ jobs:
     steps:
       # Run default snakemake
       - uses: snakemake/snakemake-github-action@v1
-	with:
-	  directory: './'
-	  snakefile: 'Snakefile'
-	  args: '--cores 1 --use-conda'
+        with:
+          directory: './'
+          snakefile: 'Snakefile'
+          args: '--cores 1 --use-conda'
