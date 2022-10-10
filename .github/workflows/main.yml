@@ -14,7 +14,7 @@ on:
     types: [ published, created ]
     
 
-# The workflow will have just one job
+# The workflow will have three jobs: running the main ARPEGGIO mode, linting and trying additional configs
 jobs:
   # Name of the job
   run-worfklow:
@@ -51,7 +51,7 @@ jobs:
     steps:
       # Run snakemake diploid only mode paired-end reads
       - name: run-ARPEGGIO-dp-PE
-      - uses: snakemake/snakemake-github-action@v1
+        uses: snakemake/snakemake-github-action@v1
         with:
           directory: './'
           snakefile: 'Snakefile'
@@ -59,7 +59,7 @@ jobs:
 
       # Run snakemake diploid only mode single-end reads
       - name: run-ARPEGGIO-dp-SE
-      - uses: snakemake/snakemake-github-action@v1
+        uses: snakemake/snakemake-github-action@v1
         with:
           directory: './'
           snakefile: 'Snakefile'
@@ -67,7 +67,7 @@ jobs:
 
       # Run snakemake polyploid only mode paired-end reads
       - name: run-ARPEGGIO-pp-PE
-      - uses: snakemake/snakemake-github-action@v1
+        uses: snakemake/snakemake-github-action@v1
         with:
           directory: './'
           snakefile: 'Snakefile'
@@ -75,7 +75,7 @@ jobs:
 
       # Run snakemake polyploid only mode single-end reads
       - name: run-ARPEGGIO-pp-SE
-      - uses: snakemake/snakemake-github-action@v1
+        uses: snakemake/snakemake-github-action@v1
         with:
           directory: './'
           snakefile: 'Snakefile'
