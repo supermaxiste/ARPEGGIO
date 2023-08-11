@@ -22,7 +22,7 @@ rule bismark_prepare_genome_1:
     conda:
         "../envs/environment.yaml"
     shell:
-        "bismark_genome_preparation {params.genome1} 2>&1 {log}"
+        "bismark_genome_preparation {params.genome1} 2> {log}"
 
 
 ## Run Bismark to prepare synthetic bisulfite converted genomes
@@ -42,7 +42,7 @@ rule bismark_prepare_genome_2:
     conda:
         "../envs/environment.yaml"
     shell:
-        "bismark_genome_preparation {params.genome2} 2>&1 {log}"
+        "bismark_genome_preparation {params.genome2} 2> {log}"
 
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are single-end.
@@ -76,7 +76,7 @@ rule bismark_alignment_SE_1:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark --prefix {params.prefix} --multicore {params.bismark_cores}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq} 2>&1 {log}"
+        "bismark --prefix {params.prefix} --multicore {params.bismark_cores}  -o {params.output} --temp_dir {params.output} --genome {params.genome1} {input.fastq} 2> {log}"
 
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are single-end.
@@ -110,7 +110,7 @@ rule bismark_alignment_SE_2:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark --prefix {params.prefix} --multicore {params.bismark_cores}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq} 2>&1 {log}"
+        "bismark --prefix {params.prefix} --multicore {params.bismark_cores}  -o {params.output} --temp_dir {params.output} --genome {params.genome2} {input.fastq} 2> {log}"
 
 
 ## Run Bismark to perform alignment to the first parental genome (GENOME_PARENT_1) if reads are paired-end.
@@ -147,7 +147,7 @@ rule bismark_alignment_PE_1:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark --prefix {params.prefix} --multicore {params.bismark_cores} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output} 2>&1 {log}"
+        "bismark --prefix {params.prefix} --multicore {params.bismark_cores} --genome {params.genome1} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output} 2> {log}"
 
 
 ## Run Bismark to perform alignment to the second parental genome (GENOME_PARENT_2) if reads are paired-end.
@@ -184,4 +184,4 @@ rule bismark_alignment_PE_2:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark --prefix {params.prefix} --multicore {params.bismark_cores} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output} 2>&1 {log}"
+        "bismark --prefix {params.prefix} --multicore {params.bismark_cores} --genome {params.genome2} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output} 2> {log}"

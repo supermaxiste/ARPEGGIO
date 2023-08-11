@@ -21,7 +21,7 @@ rule dm_regions_bed:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/significantGenesToBed.R {input} {params} 2>&1 {log}"
+        "Rscript scripts/significantGenesToBed.R {input} {params} 2> {log}"
 
 
 # The first downstream rule for special mode: diploid vs diploid or polyploid vs polyploid. Read above for a short explanation of the rule.
@@ -47,7 +47,7 @@ rule dm_regions_bed_special:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/significantGenesToBed.R {input} {params} 2>&1 {log}"
+        "Rscript scripts/significantGenesToBed.R {input} {params} 2> {log}"
 
 
 # The second downsteam rule checks the gene regions provided in the annotation file and finds any overlaps with DMRs. The output includes all genes showing an overlap with the overlapping DMR.
@@ -67,7 +67,7 @@ rule bedtools_intersect_1:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "bedtools intersect -a {params.anno1} -b {input.i1} -wo > {output.o1} 2>&1 {log}"
+        "bedtools intersect -a {params.anno1} -b {input.i1} -wo > {output.o1} 2> {log}"
 
 
 rule bedtools_intersect_2:
@@ -84,7 +84,7 @@ rule bedtools_intersect_2:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "bedtools intersect -a {params.anno2} -b {input.i2} -wo > {output.o2} 2>&1 {log}"
+        "bedtools intersect -a {params.anno2} -b {input.i2} -wo > {output.o2} 2> {log}"
 
 
 # The second downstream rule for special mode: diploid vs diploid or polyploid vs polyploid. Read above for a short explanation of the rule.
@@ -103,9 +103,9 @@ rule bedtools_intersect_special_diploid:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "bedtools intersect -a {params.anno1} -b {input} -wo > {output} 2>&1 {log}" if (
+        "bedtools intersect -a {params.anno1} -b {input} -wo > {output} 2> {log}" if (
         sum(samples.origin == "parent1") > 0
-        ) else "bedtools intersect -a {params.anno2} -b {input} -wo > {output} 2>&1 {log}"
+        ) else "bedtools intersect -a {params.anno2} -b {input} -wo > {output} 2> {log}"
 
 
 rule bedtools_intersect_special_polyploid_1:
@@ -120,7 +120,7 @@ rule bedtools_intersect_special_polyploid_1:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "bedtools intersect -a {params.anno1} -b {input} -wo > {output} 2>&1 {log}"
+        "bedtools intersect -a {params.anno1} -b {input} -wo > {output} 2> {log}"
 
 
 rule bedtools_intersect_special_polyploid_2:
@@ -135,7 +135,7 @@ rule bedtools_intersect_special_polyploid_2:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "bedtools intersect -a {params.anno2} -b {input} -wo > {output} 2>&1 {log}"
+        "bedtools intersect -a {params.anno2} -b {input} -wo > {output} 2> {log}"
 
 
 # The third and final rule for downstream analyses. With overlap information and DMR information, we generate a summary file including gene ID of the genes overlapping with DMRs, all ranges for gene regions and DMRs and methylation status. Methylation status is based on the statistics given by the dmrseq output, taking condition 'A' as reference (i.e. increase means increase compared to condition 'A')
@@ -155,7 +155,7 @@ rule dmr_genes_1:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1} 2>&1 {log}"
+        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1} 2> {log}"
 
 
 rule dmr_genes_2:
@@ -172,7 +172,7 @@ rule dmr_genes_2:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {params.o2} 2>&1 {log}"
+        "Rscript scripts/DMGeneSummary.R {input.i2} {input.dm2} {params.geneID2} {params.o2} 2> {log}"
 
 
 # The third downstream rules for special modes: diploid vs diploid (first below) or polyploid vs polyploid (second below). Read above for a short explanation of the rule.
@@ -193,9 +193,9 @@ rule dmr_genes_special_diploid:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1} 2>&1 {log}" if (
+        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1} 2> {log}" if (
         sum(samples.origin == "parent1") > 0
-        ) else "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o1} 2>&1 {log}"
+        ) else "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o1} 2> {log}"
 
 
 rule dmr_genes_special_polyploid_1:
@@ -212,7 +212,7 @@ rule dmr_genes_special_polyploid_1:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1} 2>&1 {log}"
+        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID1} {params.o1} 2> {log}"
 
 
 rule dmr_genes_special_polyploid_2:
@@ -229,4 +229,4 @@ rule dmr_genes_special_polyploid_2:
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o2} 2>&1 {log}"
+        "Rscript scripts/DMGeneSummary.R {input.i1} {input.dm1} {params.geneID2} {params.o2} 2> {log}"

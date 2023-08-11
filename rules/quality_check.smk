@@ -23,7 +23,7 @@ rule quality_control:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "fastqc -o {params.FastQC} -t {threads} {input.fastq} 2>&1 {log}"
+        "fastqc -o {params.FastQC} -t {threads} {input.fastq} 2> {log}"
 
 
 ## Run FastQC on SE trimmed reads resulting from trim_galore
@@ -44,7 +44,7 @@ rule quality_control_trimmed_SE:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "fastqc -o {params.FastQC} -t {threads} {input.fastq} 2>&1 {log}"
+        "fastqc -o {params.FastQC} -t {threads} {input.fastq} 2> {log}"
 
 
 ## Run FastQC on PE trimmed reads resulting from trim_galore
@@ -67,7 +67,7 @@ rule quality_control_trimmed_PE:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "fastqc -o {params.FastQC} -t {threads} {input} 2>&1 {log}"
+        "fastqc -o {params.FastQC} -t {threads} {input} 2> {log}"
 
 
 ## Run Bismark to prepare synthetic bisulfite converted control genome to check conversion efficiency
@@ -85,7 +85,7 @@ rule bismark_prepare_control:
     conda:
         "../envs/environment.yaml"
     shell:
-        "bismark_genome_preparation {input.control} 2>&1 {log}"
+        "bismark_genome_preparation {input.control} 2> {log}"
 
 
 ## Run Bismark to perform alignment to the control genome to check conversion efficiency if reads are single-end.
@@ -119,7 +119,7 @@ rule bismark_alignment_SE_control:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark --prefix {params.prefix} --multicore {params.bismark_cores}  -o {params.output} --temp_dir {params.output} --genome {params.control} {input.fastq} 2>&1 {log}"
+        "bismark --prefix {params.prefix} --multicore {params.bismark_cores}  -o {params.output} --temp_dir {params.output} --genome {params.control} {input.fastq} 2> {log}"
 
 
 rule bismark_alignment_PE_control:
@@ -153,7 +153,7 @@ rule bismark_alignment_PE_control:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark --prefix {params.prefix} --multicore {params.bismark_cores} --genome {params.control} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output} 2>&1 {log}"
+        "bismark --prefix {params.prefix} --multicore {params.bismark_cores} --genome {params.control} -1 {input.fastq1} -2 {input.fastq2} -o {params.output} --temp_dir {params.output} 2> {log}"
 
 
 # sort bam files for multiqc (parent1)
@@ -209,7 +209,7 @@ rule bam_sorting_p2:
     conda:
         "../envs/environment.yaml"
     shell:
-        "samtools sort {input.p2} > {output.o2} 2>&1 {log}"
+        "samtools sort {input.p2} > {output.o2} 2> {log}"
 
 
 # sort bam files for multiqc (allopolyploid)
@@ -274,7 +274,7 @@ rule qualimap_p1:
         "../envs/environment2.yaml"
     threads: CORES
     shell:
-        "qualimap bamqc -bam {input} -outdir {params.output} -nt {threads} --java-mem-size=4G 2>&1 {log}"
+        "qualimap bamqc -bam {input} -outdir {params.output} -nt {threads} --java-mem-size=4G 2> {log}"
 
 
 ## Qualimap rule to get statistics about bam files for parent2
@@ -303,7 +303,7 @@ rule qualimap_p2:
         "../envs/environment2.yaml"
     threads: CORES
     shell:
-        "qualimap bamqc -bam {input} -outdir {params.output} -nt {threads} --java-mem-size=4G 2>&1 {log}"
+        "qualimap bamqc -bam {input} -outdir {params.output} -nt {threads} --java-mem-size=4G 2> {log}"
 
 
 ## Qualimap rule to get statistics about bam files for allopolyploid SE reads
@@ -328,7 +328,7 @@ rule qualimap_allo_se:
         "../envs/environment2.yaml"
     threads: CORES
     shell:
-        "qualimap bamqc -bam {input.genome} -outdir {params.output} -nt {threads} --java-mem-size=4G 2>&1 {log}"
+        "qualimap bamqc -bam {input.genome} -outdir {params.output} -nt {threads} --java-mem-size=4G 2> {log}"
 
 
 ## Qualimap rule to get statistics about bam files for allopolyploid PE reads
@@ -353,7 +353,7 @@ rule qualimap_allo_pe:
         "../envs/environment2.yaml"
     threads: CORES
     shell:
-        "qualimap bamqc -bam {input.genome} -outdir {params.output} -nt {threads} --java-mem-size=4G 2>&1 {log}"
+        "qualimap bamqc -bam {input.genome} -outdir {params.output} -nt {threads} --java-mem-size=4G 2> {log}"
 
 
 ## Run MultiQC to combine all the outputs from QC, trimming and alignment in a single nice report
@@ -374,4 +374,4 @@ rule multiqc:
     conda:
         "../envs/environment.yaml"
     shell:
-        "multiqc {params.inputdir} -f -o {params.multiqcdir} 2>&1 {log}"
+        "multiqc {params.inputdir} -f -o {params.multiqcdir} 2> {log}"

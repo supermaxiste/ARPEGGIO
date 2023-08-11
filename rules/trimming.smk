@@ -27,7 +27,7 @@ rule trim_galore_se:
     conda:
         "../envs/environment.yaml"
     shell:
-        "trim_galore -q 20 --clip_R1 {params.trim_5_r1} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2>&1 {log}" if config[
+        "trim_galore -q 20 --clip_R1 {params.trim_5_r1} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2> {log}" if config[
         "RUN_TRIMMING"
         ] and config[
             "TRIM_5_ONLY"
@@ -67,7 +67,7 @@ rule trim_galore_pe:
     conda:
         "../envs/environment.yaml"
     shell:
-        "trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2>&1 {log}" if config[
+        "trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2> {log}" if config[
         "RUN_TRIMMING"
         ] and config[
             "TRIM_5_ONLY"

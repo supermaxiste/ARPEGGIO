@@ -35,7 +35,7 @@ rule read_sorting_SE:
             :-1
         ],
     shell:
-        "{input.eagle_bin} --ngi {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list} 2>&1 {log}"
+        "{input.eagle_bin} --ngi {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list} 2> {log}"
 
 
 ## Run EAGLE-RC to classify reads to the most probable genome for PE reads
@@ -66,4 +66,4 @@ rule read_sorting_PE:
             :-1
         ],
     shell:
-        "{input.eagle_bin} --ngi --paired {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list} 2>&1 {log}"
+        "{input.eagle_bin} --ngi --paired {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list} 2> {log}"
