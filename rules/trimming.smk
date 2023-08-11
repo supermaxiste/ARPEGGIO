@@ -32,12 +32,12 @@ rule trim_galore_se:
         ] and config[
             "TRIM_5_ONLY"
         ] else (
-            "trim_galore -q 20 --clip_R1 {params.trim_5_r1}  --three_prime_clip_R1 {params.trim_3_r1} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2>&1 {log}"
+            "trim_galore -q 20 --clip_R1 {params.trim_5_r1}  --three_prime_clip_R1 {params.trim_3_r1} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2> {log}"
             if config["RUN_TRIMMING"] and config["TRIM_3_ONLY"]
             else (
-                "trim_galore -q 20 --clip_R1 {params.trim_5_r1}  --three_prime_clip_R1 {params.trim_3_r1} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2>&1 {log}"
+                "trim_galore -q 20 --clip_R1 {params.trim_5_r1}  --three_prime_clip_R1 {params.trim_3_r1} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2> {log}"
                 if config["RUN_TRIMMING"]
-                else "trim_galore -q 20 --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2>&1 {log}"
+                else "trim_galore -q 20 --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt {input.fastq1} 2> {log}"
             )
         )
 
@@ -72,11 +72,11 @@ rule trim_galore_pe:
         ] and config[
             "TRIM_5_ONLY"
         ] else (
-            "trim_galore -q 20 --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2>&1 {log}"
+            "trim_galore -q 20 --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2> {log}"
             if config["RUN_TRIMMING"] and config["TRIM_3_ONLY"]
             else (
-                "trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2>&1 {log}"
+                "trim_galore -q 20 --clip_R1 {params.trim_5_r1} --clip_R2 {params.trim_5_r2} --three_prime_clip_R1 {params.trim_3_r1} --three_prime_clip_R2 {params.trim_3_r2} --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2> {log}"
                 if config["RUN_TRIMMING"]
-                else "trim_galore -q 20 --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2>&1 {log}"
+                else "trim_galore -q 20 --phred33 --length 20 -j {params.trim_cores} -o {params.FASTQtrimmeddir} --path_to_cutadapt cutadapt --paired {input.fastq1} {input.fastq2} 2> {log}"
             )
         )
