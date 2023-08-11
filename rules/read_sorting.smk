@@ -23,7 +23,7 @@ rule read_sorting_SE:
         o1=f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified1.ref.bam",
         o2=f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified2.ref.bam",
     log:
-        f"logs/read_sorting_{{sample}}_SE.log",
+        f"{OUTPUT_DIR}/logs/read_sorting_{{sample}}_SE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/readsorting_se_{{sample}}.txt"
     params:
@@ -35,7 +35,7 @@ rule read_sorting_SE:
             :-1
         ],
     shell:
-        "{input.eagle_bin} --ngi {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list}"
+        "{input.eagle_bin} --ngi {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list} 2>&1 {log}"
 
 
 ## Run EAGLE-RC to classify reads to the most probable genome for PE reads
@@ -54,7 +54,7 @@ rule read_sorting_PE:
         o1=f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified1.ref.bam",
         o2=f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified2.ref.bam",
     log:
-        f"logs/read_sorting_{{sample}}_PE.log",
+        f"{OUTPUT_DIR}/logs/read_sorting_{{sample}}_PE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/readsorting_pe_{{sample}}.txt"
     params:
@@ -66,4 +66,4 @@ rule read_sorting_PE:
             :-1
         ],
     shell:
-        "{input.eagle_bin} --ngi --paired {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list}"
+        "{input.eagle_bin} --ngi --paired {params.phred} --ref1={params.genome1} --bam1={input.reads1} --ref2={params.genome2} --bam2={input.reads2} -o {params.output} --bs=3 > {params.list} 2>&1 {log}"

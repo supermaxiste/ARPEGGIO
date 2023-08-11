@@ -17,14 +17,14 @@ rule context_separation_parent_1:
         o2=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent1/{{sample}}_CHG.cov",
         o3=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent1/{{sample}}_CHH.cov",
     log:
-        f"logs/context_separation_{{sample}}_p1.log",
+        f"{OUTPUT_DIR}/logs/context_separation_{{sample}}_p1.log",
     params:
         sample_name=f"{{sample}}",
         output=lambda w, output: os.path.split(output.o1)[0],
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name}"
+        "Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name} 2>&1 {log}"
 
 
 ## Run R script to remove all rows with no cytosines and generate three files for each cytosine context for parent 2
@@ -38,14 +38,14 @@ rule context_separation_parent_2:
         o2=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent2/{{sample}}_CHG.cov",
         o3=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent2/{{sample}}_CHH.cov",
     log:
-        f"logs/context_separation_{{sample}}_p2.log",
+        f"{OUTPUT_DIR}/logs/context_separation_{{sample}}_p2.log",
     params:
         sample_name=f"{{sample}}",
         output=lambda w, output: os.path.split(output.o1)[0],
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name}"
+        "Rscript scripts/CoverageFileGeneratorComplete.R {input.p1} {params.output} {params.sample_name} 2>&1 {log}"
 
 
 ## Run R script to remove all rows with no cytosines and generate three files for each cytosine context for parent 1
@@ -58,7 +58,7 @@ rule combine_context_allo:
     output:
         f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_12/{{sample}}.CX_report.txt",
     log:
-        f"logs/combine_context_{{sample}}_12.log",
+        f"{OUTPUT_DIR}/logs/combine_context_{{sample}}_12.log",
     shell:
         "cat {input.p1} {input.p2} > {output}"
 
@@ -71,14 +71,14 @@ rule context_separation_allo:
         o2=f"{OUTPUT_DIR}DMR_analysis/context_separation/allopolyploid/{{sample}}_CHG.cov",
         o3=f"{OUTPUT_DIR}DMR_analysis/context_separation/allopolyploid/{{sample}}_CHH.cov",
     log:
-        f"logs/context_separation_{{sample}}_allo.log",
+        f"{OUTPUT_DIR}/logs/context_separation_{{sample}}_allo.log",
     params:
         sample_name=f"{{sample}}",
         output=lambda w, output: os.path.split(output.o1)[0],
     conda:
         "../envs/environment_downstream.yaml"
     shell:
-        "Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name}"
+        "Rscript scripts/CoverageFileGeneratorComplete.R {input} {params.output} {params.sample_name} 2>&1 {log}"
 
 
 # Run dmrseq for CG context for parent1 subgenome
@@ -91,7 +91,7 @@ rule dmrseq_CG_1:
     output:
         comparison1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
     log:
-        f"logs/dmrseq_CG_1.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CG_1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CG.txt"
     params:
@@ -102,7 +102,7 @@ rule dmrseq_CG_1:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo}"
+        "Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo} 2>&1 {log}"
 
 
 # Run dmrseq for CG context for parent2 subgenome
@@ -115,7 +115,7 @@ rule dmrseq_CG_2:
     output:
         comparison2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt",
     log:
-        f"logs/dmrseq_CG_2.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CG_2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CG.txt"
     params:
@@ -126,7 +126,7 @@ rule dmrseq_CG_2:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+        "Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo} 2>&1 {log}"
 
 
 # Run dmrseq for CHG context for parent1 subgenome
@@ -139,7 +139,7 @@ rule dmrseq_CHG_1:
     output:
         comparison1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
     log:
-        f"logs/dmrseq_CHG_1.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CHG_1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHG.txt"
     params:
@@ -150,7 +150,7 @@ rule dmrseq_CHG_1:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo}"
+        "Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo} 2>&1 {log}"
 
 
 # Run dmrseq for CHG context for parent2 subgenome
@@ -163,7 +163,7 @@ rule dmrseq_CHG_2:
     output:
         comparison2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt",
     log:
-        f"logs/dmrseq_CHG_2.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CHG_2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHG.txt"
     params:
@@ -174,7 +174,7 @@ rule dmrseq_CHG_2:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+        "Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo} 2>&1 {log}"
 
 
 # Run dmrseq for CHH context for parent1 subgenome
@@ -187,7 +187,7 @@ rule dmrseq_CHH_1:
     output:
         comparison1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
     log:
-        f"logs/dmrseq_CHH_1.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CHH_1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHH.txt"
     params:
@@ -198,7 +198,7 @@ rule dmrseq_CHH_1:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo}"
+        "Rscript scripts/dmrseq.R {params.n_samples_p1} {params.n_samples_allo} {output.comparison1} {threads} {input.p1} {input.allo} 2>&1 {log}"
 
 
 # Run dmrseq for CHH context for parent2 subgenome
@@ -211,7 +211,7 @@ rule dmrseq_CHH_2:
     output:
         comparison2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt",
     log:
-        f"logs/dmrseq_CHH_2.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CHH_2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHH.txt"
     params:
@@ -222,7 +222,7 @@ rule dmrseq_CHH_2:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo}"
+        "Rscript scripts/dmrseq.R {params.n_samples_p2} {params.n_samples_allo} {output.comparison2} {threads} {input.p2} {input.allo} 2>&1 {log}"
 
 
 ## Rules for dmrseq comparing polyploids to polyploids or diploids to diploids based on conditions given in the metadata file
@@ -237,7 +237,7 @@ rule dmrseq_CG_special:
         if config["DIPLOID_ONLY"]
         else f"{OUTPUT_DIR}DMR_analysis/dmrseq/CG_context/A_v_B_polyploid.txt",
     log:
-        f"logs/dmrseq_CG_special.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CG_special.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CG_special.txt"
     params:
@@ -247,7 +247,7 @@ rule dmrseq_CG_special:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.samples_B} {params.samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
+        "Rscript scripts/dmrseq.R {params.samples_B} {params.samples_A} {output.comparison} {threads} {input.condB} {input.condA} 2>&1 {log}"
 
 
 rule dmrseq_CHG_special:
@@ -259,7 +259,7 @@ rule dmrseq_CHG_special:
         if config["DIPLOID_ONLY"]
         else f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHG_context/A_v_B_polyploid.txt",
     log:
-        f"logs/dmrseq_CHG_special.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CHG_special.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHG_special.txt"
     params:
@@ -269,7 +269,7 @@ rule dmrseq_CHG_special:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.samples_B} {params.samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
+        "Rscript scripts/dmrseq.R {params.samples_B} {params.samples_A} {output.comparison} {threads} {input.condB} {input.condA} 2>&1 {log}"
 
 
 rule dmrseq_CHH_special:
@@ -281,7 +281,7 @@ rule dmrseq_CHH_special:
         if config["DIPLOID_ONLY"]
         else f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHH_context/A_v_B_polyploid.txt",
     log:
-        f"logs/dmrseq_CHH_special.log",
+        f"{OUTPUT_DIR}/logs/dmrseq_CHH_special.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHH_special.txt"
     params:
@@ -291,4 +291,4 @@ rule dmrseq_CHH_special:
     conda:
         "../envs/environment_R.yaml"
     shell:
-        "Rscript scripts/dmrseq.R {params.samples_B} {params.samples_A} {output.comparison} {threads} {input.condB} {input.condA}"
+        "Rscript scripts/dmrseq.R {params.samples_B} {params.samples_A} {output.comparison} {threads} {input.condB} {input.condA} 2>&1 {log}"

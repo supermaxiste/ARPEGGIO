@@ -26,7 +26,7 @@ rule deduplication_SE:
     conda:
         "../envs/environment.yaml"
     shell:
-        "deduplicate_bismark -s --output_dir {params} --bam {input}"
+        "deduplicate_bismark -s --output_dir {params} --bam {input} 2>&1 {log}"
 
 
 ## Run deduplication of the alignments to remove duplicated reads for PE reads (GENOME_PARENT_1)
@@ -50,4 +50,4 @@ rule deduplication_PE:
     conda:
         "../envs/environment.yaml"
     shell:
-        "deduplicate_bismark -p --output_dir {params} --bam {input}"
+        "deduplicate_bismark -p --output_dir {params} --bam {input} 2>&1 {log}"
