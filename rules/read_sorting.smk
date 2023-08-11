@@ -23,7 +23,7 @@ rule read_sorting_SE:
         o1=f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified1.ref.bam",
         o2=f"{OUTPUT_DIR}read_sorting/{{sample}}_se/{{sample}}_classified2.ref.bam",
     log:
-        f"{OUTPUT_DIR}/logs/read_sorting_{{sample}}_SE.log",
+        f"{OUTPUT_DIR}logs/read_sorting_{{sample}}_SE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/readsorting_se_{{sample}}.txt"
     params:
@@ -54,7 +54,7 @@ rule read_sorting_PE:
         o1=f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified1.ref.bam",
         o2=f"{OUTPUT_DIR}read_sorting/{{sample}}/{{sample}}_classified2.ref.bam",
     log:
-        f"{OUTPUT_DIR}/logs/read_sorting_{{sample}}_PE.log",
+        f"{OUTPUT_DIR}logs/read_sorting_{{sample}}_PE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/readsorting_pe_{{sample}}.txt"
     params:

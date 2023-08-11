@@ -15,7 +15,7 @@ rule dm_regions_bed:
     output:
         f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent{{one_or_two}}_v_allo_sig_sorted.bed",
     log:
-        f"{OUTPUT_DIR}/logs/dm_region_{{context}}_p{{one_or_two}}.log",
+        f"{OUTPUT_DIR}logs/dm_region_{{context}}_p{{one_or_two}}.log",
     params:
         f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent{{one_or_two}}_v_allo_sig",
     conda:
@@ -39,7 +39,7 @@ rule dm_regions_bed_special:
             f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_sig_sorted.bed"
         ),
     log:
-        f"{OUTPUT_DIR}/logs/dm_region_{{context}}_special.log",
+        f"{OUTPUT_DIR}logs/dm_region_{{context}}_special.log",
     params:
         f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_sig"
         if config["DIPLOID_ONLY"]
@@ -61,7 +61,7 @@ rule bedtools_intersect_1:
     output:
         o1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent1_v_allo_genes_overlap.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bedtools_{{context}}_p1.log",
+        f"{OUTPUT_DIR}logs/bedtools_{{context}}_p1.log",
     params:
         anno1=config["ANNOTATION_PARENT_1"],
     conda:
@@ -78,7 +78,7 @@ rule bedtools_intersect_2:
     output:
         o2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/parent2_v_allo_genes_overlap.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bedtools_{{context}}_p2.log",
+        f"{OUTPUT_DIR}logs/bedtools_{{context}}_p2.log",
     params:
         anno2=config["ANNOTATION_PARENT_2"],
     conda:
@@ -96,7 +96,7 @@ rule bedtools_intersect_special_diploid:
     output:
         f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_diploid_genes_overlap.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bedtools_{{context}}_special.log",
+        f"{OUTPUT_DIR}logs/bedtools_{{context}}_special.log",
     params:
         anno1=config["ANNOTATION_PARENT_1"],
         anno2=config["ANNOTATION_PARENT_2"],
@@ -114,7 +114,7 @@ rule bedtools_intersect_special_polyploid_1:
     output:
         f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap_1.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bedtools_{{context}}_special_1.log",
+        f"{OUTPUT_DIR}logs/bedtools_{{context}}_special_1.log",
     params:
         anno1=config["ANNOTATION_PARENT_1"],
     conda:
@@ -129,7 +129,7 @@ rule bedtools_intersect_special_polyploid_2:
     output:
         f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/A_v_B_polyploid_genes_overlap_2.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bedtools_{{context}}_special_2.log",
+        f"{OUTPUT_DIR}logs/bedtools_{{context}}_special_2.log",
     params:
         anno2=config["ANNOTATION_PARENT_2"],
     conda:
@@ -148,7 +148,7 @@ rule dmr_genes_1:
     output:
         o1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_parent1_v_allo_{{context}}.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmr_genes_{{context}}_p1.log",
+        f"{OUTPUT_DIR}logs/dmr_genes_{{context}}_p1.log",
     params:
         geneID1=config["GENE_ID_PARENT_1"],
         o1=lambda w, output: os.path.splitext(output.o1)[0],
@@ -165,7 +165,7 @@ rule dmr_genes_2:
     output:
         o2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_parent2_v_allo_{{context}}.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmr_genes_{{context}}_p2.log",
+        f"{OUTPUT_DIR}logs/dmr_genes_{{context}}_p2.log",
     params:
         geneID2=config["GENE_ID_PARENT_2"],
         o2=lambda w, output: os.path.splitext(output.o2)[0],
@@ -185,7 +185,7 @@ rule dmr_genes_special_diploid:
     output:
         o1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_diploid_{{context}}.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmr_genes_{{context}}_special_diploid.log",
+        f"{OUTPUT_DIR}logs/dmr_genes_{{context}}_special_diploid.log",
     params:
         geneID1=config["GENE_ID_PARENT_1"],
         geneID2=config["GENE_ID_PARENT_2"],
@@ -205,7 +205,7 @@ rule dmr_genes_special_polyploid_1:
     output:
         o1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_1.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmr_genes_{{context}}_special_polyploid1.log",
+        f"{OUTPUT_DIR}logs/dmr_genes_{{context}}_special_polyploid1.log",
     params:
         geneID1=config["GENE_ID_PARENT_1"],
         o1=lambda w, output: os.path.splitext(output.o1)[0],
@@ -222,7 +222,7 @@ rule dmr_genes_special_polyploid_2:
     output:
         o1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/{{context}}/DM_genes_A_v_B_polyploid_{{context}}_2.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmr_genes_{{context}}_special_polyploid2.log",
+        f"{OUTPUT_DIR}logs/dmr_genes_{{context}}_special_polyploid2.log",
     params:
         geneID2=config["GENE_ID_PARENT_2"],
         o2=lambda w, output: os.path.splitext(output.o1)[0],

@@ -16,7 +16,7 @@ rule quality_control:
     params:
         FastQC=lambda w, output: os.path.split(output.o1)[0],
     log:
-        f"{OUTPUT_DIR}/logs/qc_{{sample}}.log",
+        f"{OUTPUT_DIR}logs/qc_{{sample}}.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qc_{{sample}}.txt"
     conda:
@@ -37,7 +37,7 @@ rule quality_control_trimmed_SE:
     params:
         FastQC=lambda w, output: os.path.split(output.o1)[0],
     log:
-        f"{OUTPUT_DIR}/logs/qc_{{sample}}_trimmedSE.log",
+        f"{OUTPUT_DIR}logs/qc_{{sample}}_trimmedSE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qc_trim_se_{{sample}}.txt"
     conda:
@@ -60,7 +60,7 @@ rule quality_control_trimmed_PE:
     params:
         FastQC=lambda w, output: os.path.split(output.o1)[0],
     log:
-        f"{OUTPUT_DIR}/logs/qc_{{sample}}_trimmedPE.log",
+        f"{OUTPUT_DIR}logs/qc_{{sample}}_trimmedPE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qc_trim_pe_{{sample}}.txt"
     conda:
@@ -79,7 +79,7 @@ rule bismark_prepare_control:
     output:
         f"{CONTROL_GENOME}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
     log:
-        f"{OUTPUT_DIR}/logs/bismark_prepare_control.log",
+        f"{OUTPUT_DIR}logs/bismark_prepare_control.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/prepare_control_genome.txt"
     conda:
@@ -105,7 +105,7 @@ rule bismark_alignment_SE_control:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Conversion_efficiency/{{sample}}/cc.{{sample}}_bismark_bt2_SE_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bismark_alignment_SE_{{sample}}_control.log",
+        f"{OUTPUT_DIR}logs/bismark_alignment_SE_{{sample}}_control.log",
     params:
         output=lambda w, output: os.path.split(output.sample)[0],
         control=lambda w, input: os.path.split(
@@ -139,7 +139,7 @@ rule bismark_alignment_PE_control:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Conversion_efficiency/{{sample}}/cc.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_PE_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/bismark_alignment_PE_{{sample}}_control.log",
+        f"{OUTPUT_DIR}logs/bismark_alignment_PE_{{sample}}_control.log",
     params:
         output=lambda w, output: os.path.split(output.sample)[0],
         control=lambda w, input: os.path.split(
@@ -177,7 +177,7 @@ rule bam_sorting_p1:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_1/1.{{sample}}_bismark_bt2.deduplicated_sorted.bam",
     log:
-        f"{OUTPUT_DIR}/logs/bam_sorting_{{sample}}_p1.log",
+        f"{OUTPUT_DIR}logs/bam_sorting_{{sample}}_p1.log",
     conda:
         "../envs/environment.yaml"
     shell:
@@ -205,7 +205,7 @@ rule bam_sorting_p2:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_2/2.{{sample}}_bismark_bt2.deduplicated_sorted.bam",
     log:
-        f"{OUTPUT_DIR}/logs/bam_sorting_{{sample}}_p2.log",
+        f"{OUTPUT_DIR}logs/bam_sorting_{{sample}}_p2.log",
     conda:
         "../envs/environment.yaml"
     shell:
@@ -241,7 +241,7 @@ rule bam_sorting_allo:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_bismark_bt2.deduplicated_sorted_allo.bam",
     log:
-        f"{OUTPUT_DIR}/logs/bam_sorting_{{sample}}_{{one_or_two}}allo.log",
+        f"{OUTPUT_DIR}logs/bam_sorting_{{sample}}_{{one_or_two}}allo.log",
     conda:
         "../envs/environment.yaml"
     shell:
@@ -265,7 +265,7 @@ rule qualimap_p1:
     output:
         o1=f"{OUTPUT_DIR}qualimap/{{sample}}_p1/qualimapReport.html",
     log:
-        f"{OUTPUT_DIR}/logs/qualimap_{{sample}}_p1.log",
+        f"{OUTPUT_DIR}logs/qualimap_{{sample}}_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qualimap_p1_{{sample}}.txt"
     params:
@@ -294,7 +294,7 @@ rule qualimap_p2:
     output:
         o1=f"{OUTPUT_DIR}qualimap/{{sample}}_p2/qualimapReport.html",
     log:
-        f"{OUTPUT_DIR}/logs/qualimap_{{sample}}_p2.log",
+        f"{OUTPUT_DIR}logs/qualimap_{{sample}}_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qualimap_p2_{{sample}}.txt"
     params:
@@ -319,7 +319,7 @@ rule qualimap_allo_se:
     output:
         o1=f"{OUTPUT_DIR}qualimap/{{sample}}_allo_se_{{one_or_two}}/qualimapReport.html",
     log:
-        f"{OUTPUT_DIR}/logs/qualimap_{{sample}}_{{one_or_two}}_alloSE.log",
+        f"{OUTPUT_DIR}logs/qualimap_{{sample}}_{{one_or_two}}_alloSE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qualimap_allo_se_{{sample}}_{{one_or_two}}.txt"
     params:
@@ -344,7 +344,7 @@ rule qualimap_allo_pe:
     output:
         o1=f"{OUTPUT_DIR}qualimap/{{sample}}_allo_pe_{{one_or_two}}/qualimapReport.html",
     log:
-        f"{OUTPUT_DIR}/logs/qualimap_{{sample}}_{{one_or_two}}_alloPE.log",
+        f"{OUTPUT_DIR}logs/qualimap_{{sample}}_{{one_or_two}}_alloPE.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/qualimap_allo_pe_{{sample}}_{{one_or_two}}.txt"
     params:
@@ -365,7 +365,7 @@ rule multiqc:
     output:
         o1=f"{OUTPUT_DIR}MultiQC/multiqc_report.html",
     log:
-        f"{OUTPUT_DIR}/logs/multiqc.log",
+        f"{OUTPUT_DIR}logs/multiqc.log",
     params:
         inputdir=multiqc_params,
         multiqcdir=lambda w, output: os.path.split(output.o1)[0],

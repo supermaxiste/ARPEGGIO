@@ -15,7 +15,7 @@ rule trim_galore_se:
     output:
         o1=f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_trimmed.fq.gz",
     log:
-        f"{OUTPUT_DIR}/logs/trim_galore_{{sample}}_se.log",
+        f"{OUTPUT_DIR}logs/trim_galore_{{sample}}_se.log",
     params:
         FASTQtrimmeddir=lambda w, output: os.path.split(output.o1)[0],
         trim_5_r1=config["CLIP_5_R1"],
@@ -53,7 +53,7 @@ rule trim_galore_pe:
         o1=f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_1'])}_val_1.fq.gz",
         o2=f"{OUTPUT_DIR}FASTQtrimmed/{{sample}}_{str(config['PAIR_2'])}_val_2.fq.gz",
     log:
-        f"{OUTPUT_DIR}/logs/trim_galore_{{sample}}_pe.log",
+        f"{OUTPUT_DIR}logs/trim_galore_{{sample}}_pe.log",
     params:
         FASTQtrimmeddir=lambda w, output: os.path.split(output.o1)[0],
         trim_5_r1=config["CLIP_5_R1"],

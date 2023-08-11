@@ -17,7 +17,7 @@ rule context_separation_parent_1:
         o2=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent1/{{sample}}_CHG.cov",
         o3=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent1/{{sample}}_CHH.cov",
     log:
-        f"{OUTPUT_DIR}/logs/context_separation_{{sample}}_p1.log",
+        f"{OUTPUT_DIR}logs/context_separation_{{sample}}_p1.log",
     params:
         sample_name=f"{{sample}}",
         output=lambda w, output: os.path.split(output.o1)[0],
@@ -38,7 +38,7 @@ rule context_separation_parent_2:
         o2=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent2/{{sample}}_CHG.cov",
         o3=f"{OUTPUT_DIR}DMR_analysis/context_separation/parent2/{{sample}}_CHH.cov",
     log:
-        f"{OUTPUT_DIR}/logs/context_separation_{{sample}}_p2.log",
+        f"{OUTPUT_DIR}logs/context_separation_{{sample}}_p2.log",
     params:
         sample_name=f"{{sample}}",
         output=lambda w, output: os.path.split(output.o1)[0],
@@ -58,7 +58,7 @@ rule combine_context_allo:
     output:
         f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_12/{{sample}}.CX_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/combine_context_{{sample}}_12.log",
+        f"{OUTPUT_DIR}logs/combine_context_{{sample}}_12.log",
     shell:
         "cat {input.p1} {input.p2} > {output}"
 
@@ -71,7 +71,7 @@ rule context_separation_allo:
         o2=f"{OUTPUT_DIR}DMR_analysis/context_separation/allopolyploid/{{sample}}_CHG.cov",
         o3=f"{OUTPUT_DIR}DMR_analysis/context_separation/allopolyploid/{{sample}}_CHH.cov",
     log:
-        f"{OUTPUT_DIR}/logs/context_separation_{{sample}}_allo.log",
+        f"{OUTPUT_DIR}logs/context_separation_{{sample}}_allo.log",
     params:
         sample_name=f"{{sample}}",
         output=lambda w, output: os.path.split(output.o1)[0],
@@ -91,7 +91,7 @@ rule dmrseq_CG_1:
     output:
         comparison1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CG_context/parent1_v_allo.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CG_1.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CG_1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CG.txt"
     params:
@@ -115,7 +115,7 @@ rule dmrseq_CG_2:
     output:
         comparison2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CG_context/parent2_v_allo.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CG_2.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CG_2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CG.txt"
     params:
@@ -139,7 +139,7 @@ rule dmrseq_CHG_1:
     output:
         comparison1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHG_context/parent1_v_allo.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CHG_1.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CHG_1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHG.txt"
     params:
@@ -163,7 +163,7 @@ rule dmrseq_CHG_2:
     output:
         comparison2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHG_context/parent2_v_allo.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CHG_2.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CHG_2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHG.txt"
     params:
@@ -187,7 +187,7 @@ rule dmrseq_CHH_1:
     output:
         comparison1=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHH_context/parent1_v_allo.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CHH_1.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CHH_1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHH.txt"
     params:
@@ -211,7 +211,7 @@ rule dmrseq_CHH_2:
     output:
         comparison2=f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHH_context/parent2_v_allo.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CHH_2.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CHH_2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHH.txt"
     params:
@@ -237,7 +237,7 @@ rule dmrseq_CG_special:
         if config["DIPLOID_ONLY"]
         else f"{OUTPUT_DIR}DMR_analysis/dmrseq/CG_context/A_v_B_polyploid.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CG_special.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CG_special.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CG_special.txt"
     params:
@@ -259,7 +259,7 @@ rule dmrseq_CHG_special:
         if config["DIPLOID_ONLY"]
         else f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHG_context/A_v_B_polyploid.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CHG_special.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CHG_special.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHG_special.txt"
     params:
@@ -281,7 +281,7 @@ rule dmrseq_CHH_special:
         if config["DIPLOID_ONLY"]
         else f"{OUTPUT_DIR}DMR_analysis/dmrseq/CHH_context/A_v_B_polyploid.txt",
     log:
-        f"{OUTPUT_DIR}/logs/dmrseq_CHH_special.log",
+        f"{OUTPUT_DIR}logs/dmrseq_CHH_special.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/dmrseq_CHH_special.txt"
     params:

@@ -58,7 +58,7 @@ rule methylation_extraction_SE_parent_1:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_SE_p1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_p1_{{sample}}.txt"
     params:
@@ -128,7 +128,7 @@ rule methylation_extraction_SE_parent_2:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_SE_p2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_p2_{{sample}}.txt"
     params:
@@ -224,7 +224,7 @@ rule methylation_extraction_SE_allo_1:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_SE_allo1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_allo1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_allo1_{{sample}}.txt"
     params:
@@ -320,7 +320,7 @@ rule methylation_extraction_SE_allo_2:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_SE_allo2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_allo2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_allo2_{{sample}}.txt"
     params:
@@ -397,7 +397,7 @@ rule methylation_extraction_PE_parent_1:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_PE_p1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_p1_{{sample}}.txt"
     params:
@@ -474,7 +474,7 @@ rule methylation_extraction_PE_parent_2:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_PE_p2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_p2_{{sample}}.txt"
     params:
@@ -581,7 +581,7 @@ rule methylation_extraction_PE_allo_1:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_PE_allo1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_allo1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_allo1_{{sample}}.txt"
     params:
@@ -688,7 +688,7 @@ rule methylation_extraction_PE_allo_2:
             )
         ),
     log:
-        f"{OUTPUT_DIR}/logs/methXtract_{{sample}}_PE_allo2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_allo2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_allo2_{{sample}}.txt"
     params:
@@ -729,7 +729,7 @@ rule coverage2cytosine_1:
     output:
         o1=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/{{sample}}.CX_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/c2c_{{sample}}_p1.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_1_{{sample}}.txt"
     params:
@@ -764,7 +764,7 @@ rule coverage2cytosine_2:
     output:
         o2=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/{{sample}}.CX_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/c2c_{{sample}}_p2.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_2_{{sample}}.txt"
     params:
@@ -807,7 +807,7 @@ rule coverage2cytosine_allo_1:
     output:
         o1=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_1/{{sample}}.CX_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/c2c_{{sample}}_allo1.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_allo1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_allo_{{sample}}.txt"
     params:
@@ -850,7 +850,7 @@ rule coverage2cytosine_allo_2:
     output:
         o2=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_2/{{sample}}.CX_report.txt",
     log:
-        f"{OUTPUT_DIR}/logs/c2c_{{sample}}_allo2.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_allo2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_allo_{{sample}}.txt"
     params:

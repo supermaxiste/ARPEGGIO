@@ -12,7 +12,7 @@ rule bismark_prepare_genome_1:
     output:
         control=f"{GENOME_1}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
     log:
-        f"logs/bismark_prepare_genome_1.log",
+        f"{OUTPUT_DIR}logs/bismark_prepare_genome_1.log",
     params:
         genome1=lambda w, output: os.path.split(
             os.path.split(os.path.split(output.control)[0])[0]
@@ -32,7 +32,7 @@ rule bismark_prepare_genome_2:
     output:
         control=f"{GENOME_2}Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa",
     log:
-        f"logs/bismark_prepare_genome_2.log",
+        f"{OUTPUT_DIR}logs/bismark_prepare_genome_2.log",
     params:
         genome2=lambda w, output: os.path.split(
             os.path.split(os.path.split(output.control)[0])[0]
@@ -62,7 +62,7 @@ rule bismark_alignment_SE_1:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/{{sample}}_1/1.{{sample}}_bismark_bt2_SE_report.txt",
     log:
-        f"logs/bismark_alignment_{{sample}}_SE_1.log",
+        f"{OUTPUT_DIR}logs/bismark_alignment_{{sample}}_SE_1.log",
     params:
         output=lambda w, output: os.path.split(output.sample)[0],
         genome1=lambda w, input: os.path.split(
@@ -96,7 +96,7 @@ rule bismark_alignment_SE_2:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/{{sample}}_2/2.{{sample}}_bismark_bt2_SE_report.txt",
     log:
-        f"logs/bismark_alignment_{{sample}}_SE_2.log",
+        f"{OUTPUT_DIR}logs/bismark_alignment_{{sample}}_SE_2.log",
     params:
         output=lambda w, output: os.path.split(output.sample)[0],
         genome2=lambda w, input: os.path.split(
@@ -133,7 +133,7 @@ rule bismark_alignment_PE_1:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/{{sample}}_1/1.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_PE_report.txt",
     log:
-        f"logs/bismark_alignment_{{sample}}_PE_1.log",
+        f"{OUTPUT_DIR}logs/bismark_alignment_{{sample}}_PE_1.log",
     params:
         output=lambda w, output: os.path.split(output.sample)[0],
         genome1=lambda w, input: os.path.split(
@@ -170,7 +170,7 @@ rule bismark_alignment_PE_2:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/{{sample}}_2/2.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_PE_report.txt",
     log:
-        f"logs/bismark_alignment_{{sample}}_PE_2.log",
+        f"{OUTPUT_DIR}logs/bismark_alignment_{{sample}}_PE_2.log",
     params:
         output=lambda w, output: os.path.split(output.sample)[0],
         genome2=lambda w, input: os.path.split(
