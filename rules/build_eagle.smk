@@ -44,7 +44,7 @@ rule download_eagle:
     params:
         eagle_version=EAGLE_VERSION,
     log:
-        "{OUTPUT_DIR}logs/download_eagle.log",
+        f"{OUTPUT_DIR}logs/download_eagle.log",
     conda:
         ENV_PATH
     shell:
