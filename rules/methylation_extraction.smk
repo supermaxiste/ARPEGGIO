@@ -58,7 +58,7 @@ rule methylation_extraction_SE_parent_1:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_SE_p1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_p1_{{sample}}.txt"
     params:
@@ -69,10 +69,10 @@ rule methylation_extraction_SE_parent_1:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -128,7 +128,7 @@ rule methylation_extraction_SE_parent_2:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_SE_p2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_p2_{{sample}}.txt"
     params:
@@ -139,10 +139,10 @@ rule methylation_extraction_SE_parent_2:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -224,7 +224,7 @@ rule methylation_extraction_SE_allo_1:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_SE_allo1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_allo1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_allo1_{{sample}}.txt"
     params:
@@ -235,10 +235,10 @@ rule methylation_extraction_SE_allo_1:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -320,7 +320,7 @@ rule methylation_extraction_SE_allo_2:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_SE_allo2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_SE_allo2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_se_allo2_{{sample}}.txt"
     params:
@@ -331,10 +331,10 @@ rule methylation_extraction_SE_allo_2:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -s -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -397,7 +397,7 @@ rule methylation_extraction_PE_parent_1:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_PE_p1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_p1_{{sample}}.txt"
     params:
@@ -408,10 +408,10 @@ rule methylation_extraction_PE_parent_1:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -474,7 +474,7 @@ rule methylation_extraction_PE_parent_2:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_PE_p2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_p2_{{sample}}.txt"
     params:
@@ -485,10 +485,10 @@ rule methylation_extraction_PE_parent_2:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -581,7 +581,7 @@ rule methylation_extraction_PE_allo_1:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_PE_allo1.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_allo1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_allo1_{{sample}}.txt"
     params:
@@ -592,10 +592,10 @@ rule methylation_extraction_PE_allo_1:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -688,7 +688,7 @@ rule methylation_extraction_PE_allo_2:
             )
         ),
     log:
-        f"logs/methXtract_{{sample}}_PE_allo2.log",
+        f"{OUTPUT_DIR}logs/methXtract_{{sample}}_PE_allo2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/extraction_pe_allo2_{{sample}}.txt"
     params:
@@ -699,10 +699,10 @@ rule methylation_extraction_PE_allo_2:
         "../envs/environment.yaml"
     threads: CORES
     shell:
-        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input}" if config[
+        "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --scaffolds --CX {input} 2> {log}" if config[
         "UNFINISHED_GENOME"
         ] else (
-            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input}"
+            "bismark_methylation_extractor -p -o {params.output} --gzip --genome_folder {params.genome} --multicore {params.bismark_cores} --no_overlap --comprehensive --bedGraph --CX {input} 2> {log}"
         )
 
 
@@ -729,7 +729,7 @@ rule coverage2cytosine_1:
     output:
         o1=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p1/{{sample}}.CX_report.txt",
     log:
-        f"logs/c2c_{{sample}}_p1.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_p1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_1_{{sample}}.txt"
     params:
@@ -738,7 +738,7 @@ rule coverage2cytosine_1:
     conda:
         "../envs/environment.yaml"
     shell:
-        "coverage2cytosine -CX --genome_folder {params.genome1} -o {params.filename1} {input.f1}"
+        "coverage2cytosine -CX --genome_folder {params.genome1} -o {params.filename1} {input.f1} 2> {log}"
 
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (parent 2)
@@ -764,7 +764,7 @@ rule coverage2cytosine_2:
     output:
         o2=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_p2/{{sample}}.CX_report.txt",
     log:
-        f"logs/c2c_{{sample}}_p2.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_p2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_2_{{sample}}.txt"
     params:
@@ -773,7 +773,7 @@ rule coverage2cytosine_2:
     conda:
         "../envs/environment.yaml"
     shell:
-        "coverage2cytosine -CX --genome_folder {params.genome2} -o {params.filename2} {input.f2}"
+        "coverage2cytosine -CX --genome_folder {params.genome2} -o {params.filename2} {input.f2} 2> {log}"
 
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (allopolyploid)
@@ -807,7 +807,7 @@ rule coverage2cytosine_allo_1:
     output:
         o1=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_1/{{sample}}.CX_report.txt",
     log:
-        f"logs/c2c_{{sample}}_allo1.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_allo1.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_allo_{{sample}}.txt"
     params:
@@ -816,7 +816,7 @@ rule coverage2cytosine_allo_1:
     conda:
         "../envs/environment.yaml"
     shell:
-        "coverage2cytosine -CX --genome_folder {params.genome1} -o {params.filename1} {input.f1}"
+        "coverage2cytosine -CX --genome_folder {params.genome1} -o {params.filename1} {input.f1} 2> {log}"
 
 
 ## Run Bismark coverage2cytosine on extraction output to obtain a single file with information about all cytosines (allopolyploid)
@@ -850,7 +850,7 @@ rule coverage2cytosine_allo_2:
     output:
         o2=f"{OUTPUT_DIR}Bismark/extraction/{{sample}}_2/{{sample}}.CX_report.txt",
     log:
-        f"logs/c2c_{{sample}}_allo2.log",
+        f"{OUTPUT_DIR}logs/c2c_{{sample}}_allo2.log",
     benchmark:
         f"{OUTPUT_DIR}benchmark/c2c_allo_{{sample}}.txt"
     params:
@@ -859,4 +859,4 @@ rule coverage2cytosine_allo_2:
     conda:
         "../envs/environment.yaml"
     shell:
-        "coverage2cytosine -CX --genome_folder {params.genome2} -o {params.filename2} {input.f2}"
+        "coverage2cytosine -CX --genome_folder {params.genome2} -o {params.filename2} {input.f2} 2> {log}"

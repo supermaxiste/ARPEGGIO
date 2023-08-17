@@ -44,11 +44,11 @@ rule download_eagle:
     params:
         eagle_version=EAGLE_VERSION,
     log:
-        "logs/download_eagle.log",
+        f"{OUTPUT_DIR}logs/download_eagle.log",
     conda:
         ENV_PATH
     shell:
-        "wget https://github.com/tony-kuo/eagle/archive/v{params.eagle_version}.tar.gz -O {output.eagle_tar}"
+        "wget https://github.com/tony-kuo/eagle/archive/v{params.eagle_version}.tar.gz -O {output.eagle_tar} 2> {log}"
 
 
 rule extract_eagle:
@@ -59,11 +59,11 @@ rule extract_eagle:
     params:
         build_prefix=lambda w, input: os.path.split(input.eagle_tar)[0],
     log:
-        "logs/extract_eagle.log",
+        f"{OUTPUT_DIR}logs/extract_eagle.log",
     conda:
         ENV_PATH
     shell:
-        "tar -C {params.build_prefix} -vxf {input.eagle_tar}"
+        "tar -C {params.build_prefix} -vxf {input.eagle_tar} 2> {log}"
 
 
 rule download_htslib:
@@ -73,11 +73,11 @@ rule download_htslib:
         htslib_version=HTSLIB_VERSION,
         htslib_tar_name=HTSLIB_TAR_NAME,
     log:
-        "logs/download_htslib.log",
+        f"{OUTPUT_DIR}logs/download_htslib.log",
     conda:
         ENV_PATH
     shell:
-        "wget https://github.com/samtools/htslib/releases/download/{params.htslib_version}/{params.htslib_tar_name} -O {output.htslib_tar}"
+        "wget https://github.com/samtools/htslib/releases/download/{params.htslib_version}/{params.htslib_tar_name} -O {output.htslib_tar} 2> {log}"
 
 
 rule extract_htslib:
@@ -88,11 +88,11 @@ rule extract_htslib:
     params:
         build_prefix=lambda w, input: os.path.split(input.htslib_tar)[0],
     log:
-        "logs/extract_htslib.log",
+        f"{OUTPUT_DIR}logs/extract_htslib.log",
     conda:
         ENV_PATH
     shell:
-        "tar -C {params.build_prefix} -vxf {input.htslib_tar}"
+        "tar -C {params.build_prefix} -vxf {input.htslib_tar} 2> {log}"
 
 
 rule build_eagle:
@@ -106,12 +106,12 @@ rule build_eagle:
         eagle_dir_path=lambda w, input: os.path.split(input.eagle_mk)[0],
         eagle_mk_flags=EAGLE_MK_FLAGS,
     log:
-        "logs/build_eagle.log",
+        f"{OUTPUT_DIR}logs/build_eagle.log",
     conda:
         ENV_PATH
     threads: CORES
     shell:
-        "{params.eagle_mk_env} make -j {threads} -C {params.eagle_dir_path} {params.eagle_mk_flags}"
+        "{params.eagle_mk_env} make -j {threads} -C {params.eagle_dir_path} {params.eagle_mk_flags} 2> {log}"
 
 
 rule install_eagle:
@@ -124,8 +124,8 @@ rule install_eagle:
         eagle_dir_path=lambda w, input: os.path.split(input.eagle_bin)[0],
         eagle_mk_flags=EAGLE_MK_FLAGS,
     log:
-        "logs/install_eagle.log",
+        f"{OUTPUT_DIR}logs/install_eagle.log",
     conda:
         ENV_PATH
     shell:
-        "{params.eagle_mk_env} make -C {params.eagle_dir_path} install {params.eagle_mk_flags}"
+        "{params.eagle_mk_env} make -C {params.eagle_dir_path} install {params.eagle_mk_flags} 2> {log}"

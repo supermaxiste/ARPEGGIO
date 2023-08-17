@@ -6,7 +6,6 @@ name: ARPEGGIO_run
 # events but only for the master branch. Added trigger to publishhed and created 
 # releases as well
 on:
-  push:
   pull_request:
     branches: [ master ]
   release:

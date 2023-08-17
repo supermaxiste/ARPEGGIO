@@ -18,7 +18,7 @@ rule deduplication_SE:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_bismark_bt2.deduplicated.bam",
     log:
-        f"logs/deduplication_{{sample}}_{{one_or_two}}_SE.log",
+        f"{OUTPUT_DIR}logs/deduplication_{{sample}}_{{one_or_two}}_SE.log",
     params:
         f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/",
     benchmark:
@@ -26,7 +26,7 @@ rule deduplication_SE:
     conda:
         "../envs/environment.yaml"
     shell:
-        "deduplicate_bismark -s --output_dir {params} --bam {input}"
+        "deduplicate_bismark -s --output_dir {params} --bam {input} 2> {log}"
 
 
 ## Run deduplication of the alignments to remove duplicated reads for PE reads (GENOME_PARENT_1)
@@ -42,7 +42,7 @@ rule deduplication_PE:
         if config["RUN_TRIMMING"]
         else f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/{{one_or_two}}.{{sample}}_{str(config['PAIR_1'])}_bismark_bt2_pe.deduplicated.bam",
     log:
-        f"logs/deduplication_{{sample}}_{{one_or_two}}_PE.log",
+        f"{OUTPUT_DIR}logs/deduplication_{{sample}}_{{one_or_two}}_PE.log",
     params:
         f"{OUTPUT_DIR}Bismark/deduplication/{{sample}}_{{one_or_two}}/",
     benchmark:
@@ -50,4 +50,4 @@ rule deduplication_PE:
     conda:
         "../envs/environment.yaml"
     shell:
-        "deduplicate_bismark -p --output_dir {params} --bam {input}"
+        "deduplicate_bismark -p --output_dir {params} --bam {input} 2> {log}"
